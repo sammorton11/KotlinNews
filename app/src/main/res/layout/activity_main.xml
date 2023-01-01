@@ -4,5 +4,5 @@
     android:id="@+id/fragment_container_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.samm.practiceapp01.ArticleFragment" />
+    android:name="com.samm.practiceapp01.presentation.ArticleFragment" />
 

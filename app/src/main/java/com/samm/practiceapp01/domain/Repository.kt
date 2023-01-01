@@ -1,11 +1,10 @@
-package com.samm.practiceapp01
+package com.samm.practiceapp01.domain
 
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.samm.practiceapp01.data.NewsApi
-import com.samm.practiceapp01.models.Articles
-import com.samm.practiceapp01.models.NewsItem
+import com.samm.practiceapp01.domain.models.Articles
 
 class Repository(private val api: NewsApi) {
 
@@ -13,6 +12,18 @@ class Repository(private val api: NewsApi) {
     val status: MutableLiveData<String?> = MutableLiveData()
     val totalResults: MutableLiveData<Int?> = MutableLiveData()
     val loading: MutableLiveData<Boolean> = MutableLiveData()
+
+    /*
+        ISSUE:
+        Using a live data below to check whether there are no results found in the search results.
+        The search field is hidden when the first item in the list is not in view,
+        if there are no results in the list, then the search field was hidden.
+
+        SOLUTION:
+        Using this live data means I don't have to rely on a views state
+        to hide or show the search field.
+     */
+    val noResults: MutableLiveData<Boolean> = MutableLiveData()
 
     suspend fun fetchArticles(search: String, context: Context) {
 
@@ -29,16 +40,15 @@ class Repository(private val api: NewsApi) {
 
             // check if there were no results for the search
             if (articlesResponse!!.isEmpty()){
+                noResults.postValue(true)
                 Toast.makeText(context, "No results found", Toast.LENGTH_LONG).show()
             }
             // Post the values to the live data
-            this.articles.postValue(articlesResponse)
-            this.status.postValue(statusResponse)
-            this.totalResults.postValue(totalResultsResponse)
+            articles.postValue(articlesResponse)
+            status.postValue(statusResponse)
+            totalResults.postValue(totalResultsResponse)
 
-        } catch (e: Exception){
-            Toast.makeText(context, "Error: $e", Toast.LENGTH_LONG).show()
-        }
+        } catch (_: Exception){ }
 
         loading.postValue(false)
     }

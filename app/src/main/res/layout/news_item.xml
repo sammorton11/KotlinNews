@@ -35,6 +35,7 @@
                 android:layout_marginBottom="7dp"
                 android:layout_marginTop="10dp"
                 android:text="Title"
+                android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:accessibilityHeading="true"
@@ -49,16 +50,16 @@
 
                 <TextView
                     android:id="@+id/date_label"
-                    android:textSize="10sp"
-                    android:layout_width="match_parent"
+                    android:textSize="11sp"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginStart="1dp"
-                    android:text="Published at: " />
+                    android:text="Published: " />
 
                 <TextView
                     android:id="@+id/article_date"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="10dp"
@@ -75,11 +76,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Click to View More"
-                android:textSize="10sp"
+                android:text="View More"
+                android:textSize="11sp"
                 android:gravity="center"
                 android:layout_marginTop="15dp"
-                android:layout_marginBottom="6dp"/>
+                android:layout_marginBottom="10dp"/>
 
         </LinearLayout>
 

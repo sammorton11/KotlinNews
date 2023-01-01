@@ -1,20 +1,21 @@
 package com.samm.practiceapp01
 
 import android.content.Context
-import android.widget.Toast
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.samm.practiceapp01.data.NewsApi
-import com.samm.practiceapp01.models.Articles
-import com.samm.practiceapp01.models.NewsItem
-import com.samm.practiceapp01.models.Source
+import com.samm.practiceapp01.domain.Repository
+import com.samm.practiceapp01.domain.models.Articles
+import com.samm.practiceapp01.domain.models.NewsItem
+import com.samm.practiceapp01.domain.models.Source
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.rules.TestRule
 import retrofit2.Response
 
 
@@ -25,6 +26,16 @@ import retrofit2.Response
  */
 
 class RepositoryTest {
+
+
+    @get:Rule
+    var rule: TestRule = InstantTaskExecutorRule()
+
+//    @Before
+//    fun setUp() {
+//        val mockLooper = mock(Looper::class.java)
+//        `when`(Looper.getMainLooper()).thenReturn(mockLooper)
+//    }
 
     @Test
     fun `fetch articles with valid search query`() {
@@ -81,6 +92,7 @@ class RepositoryTest {
         val totalResults = 0
         val response = NewsItem(status, totalResults, articles)
 
+
         every {
             runBlocking {
                 api.getNews(searchQuery = search)
@@ -102,14 +114,10 @@ class RepositoryTest {
 
     @Test
     fun `fetch articles with error`() {
-        val search = "test"
+        val search = "News"
         val api = mockk<NewsApi>()
         val context = mockk<Context>()
-        val exception = Exception("Error")
-
-        val toast = mockkObject(Toast(context))
-
-        //every { toast } returns mockk()
+        val exception = Exception()
 
         every {
             runBlocking {
@@ -117,19 +125,16 @@ class RepositoryTest {
             }
 
         } throws exception
+
         val repository = Repository(api)
 
         runBlocking {
             repository.fetchArticles(search, context)
         }
 
-        verify {
-            Toast.makeText(context, "Error: $exception", Toast.LENGTH_LONG).show()
-        }
         assertNull(repository.articles.value)
         assertNull(repository.status.value)
         assertNull(repository.totalResults.value)
+
     }
-
-
 }

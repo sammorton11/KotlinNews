@@ -1,6 +1,4 @@
-package com.samm.practiceapp01.models
-
-import com.samm.practiceapp01.models.Articles
+package com.samm.practiceapp01.domain.models
 
 data class NewsItem(
     val status: String,

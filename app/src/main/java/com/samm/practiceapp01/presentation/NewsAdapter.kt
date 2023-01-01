@@ -1,4 +1,4 @@
-package com.samm.practiceapp01
+package com.samm.practiceapp01.presentation
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,7 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.samm.practiceapp01.models.Articles
+import com.samm.practiceapp01.R
+import com.samm.practiceapp01.domain.models.Articles
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -33,7 +34,10 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     // Create and return the inflated view item that is placed in the Recycler view
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.news_item, parent, false)
+        val view = LayoutInflater
+            .from(parent.context)
+            .inflate(R.layout.news_item, parent, false)
+
         return ViewHolder(view)
     }
 
@@ -101,10 +105,10 @@ fun loadNewsImage(
         .into(newsImage)
 }
 
-fun formatDate(input: String): String {
+fun formatDate(input: String): String? {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
     val outputFormat = SimpleDateFormat("MM-dd-yyyy - hh:mm a", Locale.US)
     val date = inputFormat.parse(input)
 
-    return outputFormat.format(date)
+    return date?.let { outputFormat.format(it) }
 }

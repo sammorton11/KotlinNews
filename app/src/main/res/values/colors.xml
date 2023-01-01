@@ -9,4 +9,13 @@
     <color name="navy">#FF115588</color>
     <color name="navy2">#FF225576</color>
     <color name="white">#FFFFFFFF</color>
+
+    // Color Scheme 01
+    <color name="tuscan_red">#885053</color>
+    <color name="orange_red_crayola">#FE5F55</color>
+    <color name="light_purple">#777DA7</color>
+    <color name="olive_green">#94C9A9</color>
+    <color name="tea_green">#C6ECAE</color>
+
+
 </resources>

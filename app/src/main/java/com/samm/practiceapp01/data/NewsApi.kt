@@ -1,6 +1,7 @@
 package com.samm.practiceapp01.data
 
-import com.samm.practiceapp01.models.NewsItem
+import com.samm.practiceapp01.domain.models.NewsItem
+import com.samm.practiceapp01.util.Constants.API_KEY
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -13,6 +14,6 @@ interface NewsApi {
         @Query("page")
         pageNumber: Int = 1,
         @Query("apiKey")
-        apiKey: String = "9ea6d6be1e6d41d2a86042774ef87848"
+        apiKey: String = API_KEY
     ): Response<NewsItem>
 }

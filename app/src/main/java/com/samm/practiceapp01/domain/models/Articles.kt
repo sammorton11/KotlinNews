@@ -1,8 +1,4 @@
-package com.samm.practiceapp01.models
-
-import android.os.Parcel
-import android.os.Parcelable
-import java.io.Serializable
+package com.samm.practiceapp01.domain.models
 
 //data class Articles(
 //    val source: Source,
