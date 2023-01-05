@@ -1,7 +1,6 @@
 package com.samm.practiceapp01.presentation
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,16 +9,14 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.samm.practiceapp01.R
 import com.samm.practiceapp01.domain.models.Articles
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import com.samm.practiceapp01.util.Utility
 
 class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     private val newsList = ArrayList<Articles>()
+    private val utility = Utility()
     private val imageWidth: Int = 1000
     private val imageHeight: Int = 800
 
@@ -30,11 +27,12 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
         val newsImage: ImageView = itemView.findViewById(R.id.news_image)
         val card: CardView = itemView.findViewById(R.id.card_view)
         val date: TextView = itemView.findViewById(R.id.article_date)
+
     }
 
     // Create and return the inflated view item that is placed in the Recycler view
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater
+        val view: View = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.news_item, parent, false)
 
@@ -43,30 +41,32 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     // Bind Data to the views
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         val newsItem = newsList[position]
         val imageUrl = newsItem.url
 
         // Title
         holder.newsTitle.text = newsItem.title
+
         // Description
         holder.newsDescription.text = newsItem.description
+
         // Date text
-        val formattedDate = formatDate(newsItem.publishedAt)
+        val formattedDate = utility.formatDate(newsItem.publishedAt)
         holder.date.text = formattedDate
+
         // News Image
-        loadNewsImage(holder, newsItem, imageWidth, imageHeight)
+        utility.loadNewsImage(holder, newsItem, imageWidth, imageHeight)
+
+        // Open Website in web view fragment
         holder.card.setOnClickListener { view ->
             openWebViewFragment(view, imageUrl)
         }
     }
 
-    // Size of the data structure
     override fun getItemCount(): Int {
         return newsList.size
     }
 
-    // Update the old list with a new list
     @SuppressLint("NotifyDataSetChanged")
     fun setNews(articles: List<Articles>) {
         newsList.clear()
@@ -85,30 +85,4 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
             .addToBackStack(null)
             .commit()
     }
-}
-
-// Load an image into the image view in the news card
-fun loadNewsImage(
-    holder: NewsAdapter.ViewHolder,
-    newsItem: Articles,
-    width: Int,
-    height: Int
-){
-    val imageUrl: String = newsItem.urlToImage
-    val newsImage: ImageView = holder.newsImage
-    val context: Context = holder.newsImage.context
-
-    Glide.with(context)
-        .load(imageUrl)
-        .override(width, height) // resizing
-        .centerCrop()
-        .into(newsImage)
-}
-
-fun formatDate(input: String): String? {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-    val outputFormat = SimpleDateFormat("MM-dd-yyyy - hh:mm a", Locale.US)
-    val date = inputFormat.parse(input)
-
-    return date?.let { outputFormat.format(it) }
 }

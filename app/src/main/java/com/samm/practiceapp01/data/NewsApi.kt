@@ -1,7 +1,7 @@
 package com.samm.practiceapp01.data
 
 import com.samm.practiceapp01.domain.models.NewsItem
-import com.samm.practiceapp01.util.Constants.API_KEY
+import com.samm.practiceapp01.util.Constants.API_KEY2
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -14,6 +14,8 @@ interface NewsApi {
         @Query("page")
         pageNumber: Int = 1,
         @Query("apiKey")
-        apiKey: String = API_KEY
+        apiKey: String = API_KEY2,
+        @Query("pageSize")
+        pageSize: Int
     ): Response<NewsItem>
 }

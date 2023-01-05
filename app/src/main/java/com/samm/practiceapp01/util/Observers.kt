@@ -6,6 +6,8 @@ import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import com.samm.practiceapp01.presentation.NewsAdapter
 import com.samm.practiceapp01.presentation.NewsViewModel
+import com.samm.practiceapp01.util.Constants.pageAmount
+
 
 class Observers(
     private val newsViewModel: NewsViewModel,
@@ -29,12 +31,15 @@ class Observers(
 
     private fun totalResultsObserver(resultsAmount: TextView){
         // were just using the results amount label to test the status data
-        newsViewModel.totalResults.observe(viewLifecycleOwner){
-            resultsAmount.text = it.toString()
+        newsViewModel.totalResults.observe(viewLifecycleOwner){ total ->
+            if (total != null) {
+                pageAmount = total
+                resultsAmount.text = total.toString()
+            }
         }
     }
 
-    fun noResultsObserver(view: View){
+    private fun noResultsObserver(view: View){
         newsViewModel.noResults.observe(viewLifecycleOwner){
             if (it == true){
                 view.visibility = View.VISIBLE
@@ -43,8 +48,13 @@ class Observers(
     }
 
     fun allLiveDataObservers(view: TextView, toolbar: View, adapter: NewsAdapter) {
+        this.noResultsObserver(toolbar)
         this.totalResultsObserver(view)
         this.observer(adapter)
-        this.noResultsObserver(toolbar)
     }
+}
+
+fun getPageAmount(total: Int, pageSize: Int): Int {
+    Log.d("Page Amount", "${((total / pageSize) / 2)}")
+    return ((total / pageSize) / 2)
 }

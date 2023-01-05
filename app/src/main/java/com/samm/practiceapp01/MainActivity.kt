@@ -4,13 +4,24 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
 /*
-    Todo:
-        - Search button from the keyboard
+    Todo (Issues):
+        - Not all page data will load - possibly due to the free version of the API
+ */
+
+/*
+    Todo (Tasks):
+        - Sealed Class for state
+        - Tests
         - Clean up
-        - Bottom Nav drawer -- when there's a reason for another page e.g Breaking News page
+        - Bottom Nav drawer
         - NavGraph
         - Change project name
         - ViewBinding
+        - Hilt
+        - Create a Breaking News Fragment. - Optional
+        - Sorting the list
+        - Tests
+        - Play Store
  */
 
 class MainActivity : AppCompatActivity() {
@@ -18,6 +29,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportActionBar?.setDisplayShowTitleEnabled(true)
-        supportActionBar?.title = "Kotlin News"
+        supportActionBar?.title = "News Articles"
     }
 }
