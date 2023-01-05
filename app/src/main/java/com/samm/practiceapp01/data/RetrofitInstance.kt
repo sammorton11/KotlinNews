@@ -1,6 +1,5 @@
-package com.samm.practiceapp01
+package com.samm.practiceapp01.data
 
-import com.samm.practiceapp01.data.NewsApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

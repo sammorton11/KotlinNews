@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- res/layout/search_icon_button.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nav_buttons"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
-    <EditText
-        android:id="@+id/searchFieldz"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:hint="Search"
-        android:inputType="text" />
-    <ImageButton
-        android:id="@+id/search_icon_button"
+
+    <Button
+        android:id="@+id/previous_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_search_24"
-        android:onClick="onSearchIconButtonClick" />
+        android:layout_marginStart="75dp"
+        android:text="@string/previous"
+        style="?android:attr/buttonBarButtonStyle" />
+
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="75dp"
+        android:text="@string/next"
+        style="?android:attr/buttonBarButtonStyle" />
+
+
 </LinearLayout>

@@ -5,40 +5,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.samm.practiceapp01.R
+import com.samm.practiceapp01.util.Constants.PAGE_SIZE
+import com.samm.practiceapp01.util.Constants.pageAmount
 import com.samm.practiceapp01.util.Observers
 import com.samm.practiceapp01.util.Utility
+import com.samm.practiceapp01.util.getPageAmount
 
 class ArticleFragment : Fragment() {
 
-    private val utility = Utility()
+    private val utility = Utility() // My utility class - todo: rename this
     private lateinit var newsViewModel: NewsViewModel
     private lateinit var adapter: NewsAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var searchField: EditText
-    private lateinit var searchIconButton: ImageButton
-    private lateinit var resultsAmount: TextView
+    private lateinit var searchField: SearchView
+    private lateinit var resultsAmountTextView: TextView
     private lateinit var progressBar: ProgressBar
-    private lateinit var toolbar: MaterialToolbar
     private lateinit var backToTopButton: FloatingActionButton
     private lateinit var resultsLayout: LinearLayout
     private lateinit var observers: Observers
     private lateinit var layoutManager: LayoutManager
+    private lateinit var nextButton: Button
+    private lateinit var prevButton: Button
+    private lateinit var errorMessageTV: TextView
+    private var pageNumber = 1
 
-
-    // define layout
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,18 +44,18 @@ class ArticleFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_article, container, false)
-        val activity = requireActivity()
-        // Views
+        val activity = requireActivity() // activity associated with this fragment
+
         recyclerView = view.findViewById(R.id.news_list)
-        searchField = view.findViewById(R.id.searchField)
-        searchIconButton = view.findViewById(R.id.search_icon_button)
-        resultsAmount = view.findViewById(R.id.resultsAmount)
+        searchField = view.findViewById(R.id.search)
+        resultsAmountTextView = view.findViewById(R.id.resultsAmount)
         progressBar = view.findViewById(R.id.progress_bar)
-        toolbar = view.findViewById(R.id.toolbar)
         backToTopButton = view.findViewById(R.id.back_to_top_button)
         resultsLayout = view.findViewById(R.id.results_layout)
+        nextButton = view.findViewById(R.id.next_button)
+        prevButton = view.findViewById(R.id.previous_button)
+        errorMessageTV = view.findViewById(R.id.error_message_text_view)
 
         // Hide these view until search button is clicked
         resultsLayout.visibility = View.GONE
@@ -65,11 +63,9 @@ class ArticleFragment : Fragment() {
         layoutManager = LinearLayoutManager(activity)
         backToTopButton.setImageResource(R.drawable.ic_baseline_arrow_upward_24)
 
-        // Adapter and ViewModel
         adapter = NewsAdapter()
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
 
-        // Return the inflated layout as the root view of the fragment
         return view
     }
 
@@ -78,24 +74,41 @@ class ArticleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         progressBar.visibility = View.GONE
         setUpRecyclerView(layoutManager)
+        ifErrorMessage()
 
-        observers = Observers(newsViewModel, viewLifecycleOwner)
-        observers.allLiveDataObservers(resultsAmount, toolbar, adapter)
-
-        // do not hide toolbar if no results are found work around
-        if (!resultsAmount.text.contains("0")){
-            utility.hideViewsWhenScrolled(recyclerView, toolbar, backToTopButton)
+        // Todo: Not sure if this will work
+        observers = Observers(newsViewModel, viewLifecycleOwner).apply {
+            allLiveDataObservers(resultsAmountTextView, searchField, adapter)
         }
 
+        utility.hideViewsWhenScrolled(resultsAmountTextView, recyclerView, searchField, backToTopButton)
 
-        searchIconButton.setOnClickListener {
-            loadNewsArticlesOrShowProgressBar()
+        nextButton.setOnClickListener {
+            nextButtonClickListener()
+        }
+
+        prevButton.setOnClickListener {
+            previousButtonClickListener()
         }
 
         backToTopButton.setOnClickListener {
-            recyclerView.smoothScrollToPosition(0)
-            backToTopButton.visibility = View.GONE
+            backToTopButtonClickListener()
         }
+
+        // Get News Data when search button in keyboard is clicked
+        searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    pageNumber = 1
+                    loadNewsArticlesOrShowProgressBar(pageNumber, query)
+                }
+                return false
+            }
+            // Don't need this so just return false
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+        })
     }
 
     private fun setUpRecyclerView(layoutManager: LayoutManager){
@@ -103,11 +116,41 @@ class ArticleFragment : Fragment() {
         recyclerView.adapter = adapter
     }
 
-    private fun loadNewsArticlesOrShowProgressBar(){
+    private fun loadNewsArticlesOrShowProgressBar(page: Int, search: String){
         utility.ifDataIsLoading(newsViewModel, viewLifecycleOwner, progressBar)
         this.context?.let { context ->
-            newsViewModel.getArticles(searchField, resultsLayout, context)
+            newsViewModel.getArticles(resultsLayout, page, search, context)
         }
         utility.hideKeyboard(activity)
+    }
+
+    private fun backToTopButtonClickListener() {
+        recyclerView.smoothScrollToPosition(0)
+        backToTopButton.visibility = View.GONE
+    }
+
+    private fun nextButtonClickListener() {
+        if (pageNumber != getPageAmount(pageAmount, PAGE_SIZE)){
+            pageNumber++
+            observers.allLiveDataObservers(resultsAmountTextView, searchField, adapter)
+            loadNewsArticlesOrShowProgressBar(pageNumber, searchField.query.toString())
+        } else {
+            pageNumber+=0
+            Toast.makeText(activity, "Last Page", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun previousButtonClickListener() {
+        if (pageNumber != 1){
+            pageNumber--
+            observers.allLiveDataObservers(resultsAmountTextView, searchField, adapter)
+            loadNewsArticlesOrShowProgressBar(pageNumber, searchField.query.toString())
+        }
+    }
+
+    private fun ifErrorMessage(){
+        newsViewModel.error.observe(viewLifecycleOwner){ error ->
+            errorMessageTV.text = error
+            errorMessageTV.visibility = View.VISIBLE
+        }
     }
 }
