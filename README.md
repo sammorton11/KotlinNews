@@ -21,6 +21,8 @@ To improve the app's testability and maintainability, I am planning to implement
 
 - Dagger Hilt for Dependency Injection: This will allow me to inject the Repository and NewsApi objects into the app's ViewModel and Fragment classes, making it easier to test these classes in isolation.
 
+- Room Database: This will allow the app to quickly display data to the user, even when there is no internet connection. It can also improve the user experience by reducing the amount of time it takes to load data. By using the Room database, I can also make the app more testable by providing a local data source for unit tests. This will allow me to test the app's logic without making actual network requests.
+
 - Additional unit tests for business logic functions: I will write unit tests to cover the business logic of the app, including the functions that parse the API response and update the app's LiveData objects.
 
 - Integration tests for the Repository and ViewModel: I will write integration tests to verify that the Repository and ViewModel are working correctly together.
