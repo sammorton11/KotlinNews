@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 /*
     Todo (Tasks):
+        - Room database for caching
         - Sealed Class for state
         - Tests
         - Clean up

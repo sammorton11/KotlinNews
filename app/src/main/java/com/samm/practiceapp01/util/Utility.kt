@@ -56,11 +56,9 @@ class Utility {
     ){
         newsViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
-                // Show progress bar
                 progressBar.visibility = View.VISIBLE
 
             } else {
-                // Hide progress bar
                 progressBar.visibility = View.GONE
             }
         }
@@ -93,7 +91,6 @@ class Utility {
             .into(newsImage)
     }
 
-
     fun formatDate(input: String): String? {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
         val outputFormat = SimpleDateFormat("MM-dd-yyyy - hh:mm a", Locale.US)
@@ -101,4 +98,14 @@ class Utility {
 
         return date?.let { outputFormat.format(it) }
     }
+}
+
+// this is throwing errors outside of tests...
+fun <T> removeDuplicateArticles(list: List<T>?): List<T> {
+    if (list == null || list.isEmpty()) {
+        return emptyList()
+    }
+    val set: MutableSet<T> = mutableSetOf()
+    list.forEach { set.add(it) }
+    return set.toList()
 }

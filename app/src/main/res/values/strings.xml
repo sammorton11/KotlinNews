@@ -2,4 +2,6 @@
     <string name="app_name">PracticeApp01</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 </resources>

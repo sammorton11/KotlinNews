@@ -23,7 +23,6 @@ class NewsViewModel : ViewModel() {
 
     val noResults: MutableLiveData<Boolean> = repositoryImpl.noResults
 
-
     private fun fetchArticles(search: String, page: Int, context: Context) = viewModelScope.launch {
         repositoryImpl.fetchArticles(search, page, context)
     }
@@ -46,5 +45,4 @@ class NewsViewModel : ViewModel() {
             }
         }
     }
-
 }
