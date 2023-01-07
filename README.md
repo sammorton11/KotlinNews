@@ -3,9 +3,24 @@
 This is a news application that displays a list of news cards containing data from the NewsAPI website. The app uses a Model-View-ViewModel (MVVM) architecture and makes use of the following libraries:
 
 Retrofit: For making network requests to the NewsAPI
+
+
 Coroutines: For managing background tasks and offloading work from the main thread
+
+
 XML: For designing the user interface
-The app is divided into three packages: data, domain, and presentation. The data package contains the implementation of the Repository interface, which is responsible for fetching data from the NewsAPI and updating the app's LiveData objects with the results. The domain package contains the NewsApi interface, which defines the API endpoints and request parameters. The presentation package contains the ViewModel and Fragment classes, which handle the business logic and UI of the app, respectively.
+
+
+The app is divided into three packages: data, domain, and presentation. 
+
+The data package contains the implementation of the Repository interface, which is responsible for fetching data from the NewsAPI and updating the app's LiveData objects with the results. 
+
+The domain package contains the NewsApi interface, which defines the API endpoints and request parameters. 
+
+The presentation package contains the ViewModel and Fragment classes, which handle the business logic and UI of the app, respectively.
+
+
+
 
 To improve the app's testability and maintainability, I am planning to implement the following features:
 
