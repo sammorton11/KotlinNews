@@ -23,8 +23,8 @@ class RepositoryImpl (private val api: NewsApi): Repository {
         loading.postValue(true)
 
         try {
-
             val response = getNews(search, page)
+
             if (response.isSuccessful){
                 updateLiveDataFromResponse(response.body())
             } else {
@@ -41,12 +41,12 @@ class RepositoryImpl (private val api: NewsApi): Repository {
         loading.postValue(false)
     }
 
-    // Function to make the API call
+    // API call
     private suspend fun getNews(search: String, page: Int): Response<NewsItem> {
         return api.getNews(searchQuery = search, pageNumber = page, pageSize = PAGE_SIZE)
     }
 
-    // Function to update the LiveData values from the API response
+    // update the LiveData values from the API response
     private fun updateLiveDataFromResponse(response: NewsItem?) {
         val articlesResponse = response?.articles
         val totalResultsResponse = response?.totalResults
@@ -58,7 +58,7 @@ class RepositoryImpl (private val api: NewsApi): Repository {
         }
     }
 
-    // Function to parse the error body from the API response
+    // parse the error body from the API response
     override fun parseErrorBody(response: Response<NewsItem>): String {
         val errorJson = JSONObject(response.errorBody()?.string() ?: "")
         val errorMessage = errorJson.getString("message")

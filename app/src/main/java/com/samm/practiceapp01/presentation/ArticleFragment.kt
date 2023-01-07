@@ -16,12 +16,12 @@ import com.samm.practiceapp01.R
 import com.samm.practiceapp01.util.Constants.PAGE_SIZE
 import com.samm.practiceapp01.util.Constants.pageAmount
 import com.samm.practiceapp01.util.Observers
-import com.samm.practiceapp01.util.Utility
+import com.samm.practiceapp01.util.ViewUtility
 import com.samm.practiceapp01.util.getPageAmount
 
 class ArticleFragment : Fragment() {
 
-    private val utility = Utility() // My utility class - todo: rename this
+    private val viewUtility = ViewUtility() // My viewUtility class - todo: rename this
     private lateinit var newsViewModel: NewsViewModel
     private lateinit var adapter: NewsAdapter
     private lateinit var recyclerView: RecyclerView
@@ -83,7 +83,7 @@ class ArticleFragment : Fragment() {
             }
         }!!
 
-        utility.hideViewsWhenScrolled(resultsAmountTextView, recyclerView, searchField, backToTopButton)
+        viewUtility.hideViewsWhenScrolled(resultsAmountTextView, recyclerView, searchField, backToTopButton)
 
         nextButton.setOnClickListener {
             nextButtonClickListener()
@@ -119,14 +119,14 @@ class ArticleFragment : Fragment() {
     }
 
     private fun loadNewsArticlesOrShowProgressBar(page: Int, search: String){
-        utility.ifDataIsLoading(newsViewModel, viewLifecycleOwner, progressBar)
+        viewUtility.ifDataIsLoading(newsViewModel, viewLifecycleOwner, progressBar)
         activity.let { context ->
             activity?.applicationContext?.let {
                 newsViewModel.getArticles(resultsLayout, page, search,
                     it)
             }
         }
-        utility.hideKeyboard(activity)
+        viewUtility.hideKeyboard(activity)
     }
 
     private fun backToTopButtonClickListener() {
