@@ -18,7 +18,7 @@ import com.samm.practiceapp01.presentation.NewsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ViewUtility {
+class Utility {
 
     // Todo: Run an animation when hiding the views
     fun hideViewsWhenScrolled(

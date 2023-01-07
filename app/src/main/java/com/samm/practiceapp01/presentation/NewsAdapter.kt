@@ -11,12 +11,12 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.samm.practiceapp01.R
 import com.samm.practiceapp01.domain.models.Articles
-import com.samm.practiceapp01.util.ViewUtility
+import com.samm.practiceapp01.util.Utility
 
 class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     private val newsList = ArrayList<Articles>()
-    private val viewUtility = ViewUtility()
+    private val utility = Utility()
     private val imageWidth: Int = 1000
     private val imageHeight: Int = 800
 
@@ -44,11 +44,11 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
         holder.newsTitle.text = newsItem.title
         holder.newsDescription.text = newsItem.description
-        val formattedDate = viewUtility.formatDate(newsItem.publishedAt)
+        val formattedDate = utility.formatDate(newsItem.publishedAt)
         holder.date.text = formattedDate
 
         // News Image
-        viewUtility.loadNewsImage(holder, newsItem, imageWidth, imageHeight)
+        utility.loadNewsImage(holder, newsItem, imageWidth, imageHeight)
 
         // Open Website in web view fragment
         holder.card.setOnClickListener { view ->
