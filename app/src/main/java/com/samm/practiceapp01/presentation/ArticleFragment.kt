@@ -77,9 +77,11 @@ class ArticleFragment : Fragment() {
         ifErrorMessage()
 
         // Todo: Not sure if this will work
-        observers = Observers(newsViewModel, viewLifecycleOwner).apply {
-            allLiveDataObservers(resultsAmountTextView, searchField, adapter)
-        }
+        observers = activity?.let {
+            Observers(newsViewModel, viewLifecycleOwner, it.applicationContext).apply {
+                allLiveDataObservers(resultsAmountTextView, searchField, adapter)
+            }
+        }!!
 
         utility.hideViewsWhenScrolled(resultsAmountTextView, recyclerView, searchField, backToTopButton)
 
@@ -118,8 +120,11 @@ class ArticleFragment : Fragment() {
 
     private fun loadNewsArticlesOrShowProgressBar(page: Int, search: String){
         utility.ifDataIsLoading(newsViewModel, viewLifecycleOwner, progressBar)
-        this.context?.let { context ->
-            newsViewModel.getArticles(resultsLayout, page, search, context)
+        activity.let { context ->
+            activity?.applicationContext?.let {
+                newsViewModel.getArticles(resultsLayout, page, search,
+                    it)
+            }
         }
         utility.hideKeyboard(activity)
     }

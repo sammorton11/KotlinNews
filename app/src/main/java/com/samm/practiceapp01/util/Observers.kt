@@ -1,8 +1,10 @@
 package com.samm.practiceapp01.util
 
+import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import com.samm.practiceapp01.presentation.NewsAdapter
 import com.samm.practiceapp01.presentation.NewsViewModel
@@ -11,7 +13,8 @@ import com.samm.practiceapp01.util.Constants.pageAmount
 
 class Observers(
     private val newsViewModel: NewsViewModel,
-    private val viewLifecycleOwner: LifecycleOwner
+    private val viewLifecycleOwner: LifecycleOwner,
+    private val context: Context
 ) {
 
     /*
@@ -43,6 +46,7 @@ class Observers(
         newsViewModel.noResults.observe(viewLifecycleOwner){
             if (it == true){
                 view.visibility = View.VISIBLE
+                Toast.makeText(this.context, "No results found", Toast.LENGTH_LONG).show()
             }
         }
     }

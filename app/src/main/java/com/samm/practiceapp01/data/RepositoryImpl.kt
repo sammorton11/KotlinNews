@@ -23,27 +23,39 @@ class RepositoryImpl (private val api: NewsApi): Repository {
         loading.postValue(true)
 
         try {
-            val response = api.getNews(searchQuery = search, pageNumber = page, pageSize = PAGE_SIZE)
 
-            // Get error message if error
-            val errorMessage = parseErrorBody(response)
-            errorMessageLD.postValue(errorMessage)
-
-            // Objects from successful response assigned to Live Data values
-            val articlesResponse = response.body()?.articles
-            val totalResultsResponse = response.body()?.totalResults
-            articles.postValue(articlesResponse)
-            totalResults.postValue(totalResultsResponse)
-
-            // No results found
-            if (articlesResponse!!.isEmpty()){
-                noResults.postValue(true)
-                Toast.makeText(context, "No results found", Toast.LENGTH_LONG).show()
+            val response = getNews(search, page)
+            if (response.isSuccessful){
+                updateLiveDataFromResponse(response.body())
+            } else {
+                val parsedErrorResponse = parseErrorBody(response)
+                errorMessageLD.postValue(parsedErrorResponse)
+                Toast.makeText(context, parsedErrorResponse, Toast.LENGTH_SHORT).show()
             }
+
+            Log.d("Is Successful;", "${response.isSuccessful}")
+            Log.d("Response", "${response.body()?.articles}")
         } catch (e: Exception){
             Log.d("Exception:", "$e")
         }
         loading.postValue(false)
+    }
+
+    // Function to make the API call
+    private suspend fun getNews(search: String, page: Int): Response<NewsItem> {
+        return api.getNews(searchQuery = search, pageNumber = page, pageSize = PAGE_SIZE)
+    }
+
+    // Function to update the LiveData values from the API response
+    private fun updateLiveDataFromResponse(response: NewsItem?) {
+        val articlesResponse = response?.articles
+        val totalResultsResponse = response?.totalResults
+        totalResults.postValue(totalResultsResponse)
+        articles.postValue(articlesResponse)
+        Log.d("Articles", "${articles.value?.first()}")
+        if (articlesResponse?.isEmpty() == true){
+            noResults.postValue(true)
+        }
     }
 
     // Function to parse the error body from the API response

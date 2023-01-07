@@ -20,7 +20,6 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
     private val imageWidth: Int = 1000
     private val imageHeight: Int = 800
 
-    // ViewHolder class that holds the views that the data is adapted to
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var newsTitle: TextView = itemView.findViewById(R.id.news_title)
         val newsDescription: TextView = itemView.findViewById(R.id.news_description)
@@ -30,7 +29,6 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     }
 
-    // Create and return the inflated view item that is placed in the Recycler view
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater
             .from(parent.context)
@@ -44,13 +42,8 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
         val newsItem = newsList[position]
         val imageUrl = newsItem.url
 
-        // Title
         holder.newsTitle.text = newsItem.title
-
-        // Description
         holder.newsDescription.text = newsItem.description
-
-        // Date text
         val formattedDate = utility.formatDate(newsItem.publishedAt)
         holder.date.text = formattedDate
 
