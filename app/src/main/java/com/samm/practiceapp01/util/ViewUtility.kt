@@ -5,7 +5,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,12 +21,10 @@ class ViewUtility {
 
     // Todo: Run an animation when hiding the views
     fun hideViewsWhenScrolled(
-        resultsAmount: TextView,
         recyclerView: RecyclerView,
         toolbar: View,
         backToTopButton: FloatingActionButton
     ){
-        if (!resultsAmount.text.contains("0")){
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -46,10 +43,9 @@ class ViewUtility {
                     }
                 }
             })
-        }
     }
 
-    fun ifDataIsLoading(
+    fun showProgressBarIfLoading(
         newsViewModel: NewsViewModel,
         viewLifecycleOwner: LifecycleOwner,
         progressBar: ProgressBar
@@ -80,7 +76,7 @@ class ViewUtility {
         width: Int,
         height: Int
     ){
-        val imageUrl: String = newsItem.urlToImage
+        val imageUrl: String? = newsItem.urlToImage
         val newsImage: ImageView = holder.newsImage
         val context: Context = holder.newsImage.context
 

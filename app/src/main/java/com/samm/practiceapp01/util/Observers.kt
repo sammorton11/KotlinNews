@@ -3,12 +3,10 @@ package com.samm.practiceapp01.util
 import android.content.Context
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import com.samm.practiceapp01.presentation.NewsAdapter
 import com.samm.practiceapp01.presentation.NewsViewModel
-import com.samm.practiceapp01.util.Constants.pageAmount
 
 
 class Observers(
@@ -24,7 +22,9 @@ class Observers(
     private fun observer(adapter: NewsAdapter) {
         newsViewModel.articles.observe(viewLifecycleOwner){ listFromViewModel ->
             try {
-                adapter.setNews(listFromViewModel)
+                if (listFromViewModel != null) {
+                    adapter.setNews(listFromViewModel)
+                }
             }
             catch (e: Exception){
                 Log.d("ERROR", "$e")
@@ -32,17 +32,8 @@ class Observers(
         }
     }
 
-    private fun totalResultsObserver(resultsAmount: TextView){
-        // were just using the results amount label to test the status data
-        newsViewModel.totalResults.observe(viewLifecycleOwner){ total ->
-            if (total != null) {
-                pageAmount = total
-                resultsAmount.text = total.toString()
-            }
-        }
-    }
-
-    private fun noResultsObserver(view: View){
+    // Need this so the search bar is not hidden when there are no results
+    private fun noResultsObserver(view: View) {
         newsViewModel.noResults.observe(viewLifecycleOwner){
             if (it == true){
                 view.visibility = View.VISIBLE
@@ -51,14 +42,12 @@ class Observers(
         }
     }
 
-    fun allLiveDataObservers(view: TextView, toolbar: View, adapter: NewsAdapter) {
-        this.noResultsObserver(toolbar)
-        this.totalResultsObserver(view)
+    fun allLiveDataObservers(searchBar: View, adapter: NewsAdapter) {
+        this.noResultsObserver(searchBar)
         this.observer(adapter)
     }
 }
 
 fun getPageAmount(total: Int, pageSize: Int): Int {
-    Log.d("Page Amount", "${((total / pageSize) / 2)}")
-    return ((total / pageSize) / 2)
+    return (total + pageSize - 1) / pageSize
 }

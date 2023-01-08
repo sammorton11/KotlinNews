@@ -5,22 +5,19 @@ import androidx.appcompat.app.AppCompatActivity
 
 /*
     Todo (Issues):
-        - Not all page data will load - possibly due to the free version of the API
+        - Don't use getDataByPage() in next and prev buttons click listeners; clears cache
+        - Developer accounts are limited to 100 results
  */
 
 /*
     Todo (Tasks):
-        - Room database for caching
         - Sealed Class for state
-        - Tests
         - Clean up
-        - Bottom Nav drawer
         - NavGraph
         - Change project name
         - ViewBinding
         - Hilt
         - Create a Breaking News Fragment. - Optional
-        - Sorting the list
         - Tests
         - Play Store
  */

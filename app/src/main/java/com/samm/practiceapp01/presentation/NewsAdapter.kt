@@ -44,7 +44,7 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
         holder.newsTitle.text = newsItem.title
         holder.newsDescription.text = newsItem.description
-        val formattedDate = viewUtility.formatDate(newsItem.publishedAt)
+        val formattedDate = newsItem.publishedAt?.let { viewUtility.formatDate(it) }
         holder.date.text = formattedDate
 
         // News Image
@@ -52,7 +52,9 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
         // Open Website in web view fragment
         holder.card.setOnClickListener { view ->
-            openWebViewFragment(view, imageUrl)
+            if (imageUrl != null) {
+                openWebViewFragment(view, imageUrl)
+            }
         }
     }
 
