@@ -6,19 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.samm.practiceapp01.R
 import com.samm.practiceapp01.domain.models.Articles
+import com.samm.practiceapp01.util.Constants.imageHeight
+import com.samm.practiceapp01.util.Constants.imageWidth
 import com.samm.practiceapp01.util.ViewUtility
 
 class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     private val newsList = ArrayList<Articles>()
     private val viewUtility = ViewUtility()
-    private val imageWidth: Int = 1000
-    private val imageHeight: Int = 800
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var newsTitle: TextView = itemView.findViewById(R.id.news_title)
@@ -53,7 +52,7 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
         // Open Website in web view fragment
         holder.card.setOnClickListener { view ->
             if (imageUrl != null) {
-                openWebViewFragment(view, imageUrl)
+                viewUtility.openWebViewFragment(view, imageUrl)
             }
         }
     }
@@ -67,17 +66,5 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
         newsList.clear()
         newsList.addAll(articles)
         notifyDataSetChanged()
-    }
-
-    // swaps the article fragment out for the webview fragment passing the url into the
-    // newInstance function.
-    private fun openWebViewFragment(view: View, url: String) {
-        val activity = view.context as AppCompatActivity
-        val myFragment = WebViewFragment.newInstance(url)
-        activity.supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container_view, myFragment)
-            .addToBackStack(null)
-            .commit()
     }
 }

@@ -17,7 +17,7 @@ interface NewsDao {
     fun getAllNewsItems(): LiveData<List<Articles>>
 
     @Query("DELETE FROM my_table")
-    suspend fun refreshCache()
+    suspend fun clearCache()
 
     @Query("SELECT * FROM my_table LIMIT :limit OFFSET :offset")
     fun getPage(limit: Int, offset: Int): LiveData<List<Articles>>

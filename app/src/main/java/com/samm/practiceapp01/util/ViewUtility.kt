@@ -1,19 +1,23 @@
 package com.samm.practiceapp01.util
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.ProgressBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.samm.practiceapp01.R
 import com.samm.practiceapp01.domain.models.Articles
 import com.samm.practiceapp01.presentation.NewsAdapter
 import com.samm.practiceapp01.presentation.NewsViewModel
+import com.samm.practiceapp01.presentation.WebViewFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -94,14 +98,17 @@ class ViewUtility {
 
         return date?.let { outputFormat.format(it) }
     }
-}
 
-// this is throwing errors outside of tests...
-fun <T> removeDuplicateArticles(list: List<T>?): List<T> {
-    if (list == null || list.isEmpty()) {
-        return emptyList()
+    // swaps the article fragment out for the web view fragment passing the url into the
+    // newInstance function.
+    fun openWebViewFragment(view: View, url: String) {
+        val activity = view.context as AppCompatActivity
+        val myFragment = WebViewFragment.newInstance(url)
+        Log.d("URL:", url)
+        activity.supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container_view, myFragment)
+            .addToBackStack(null)
+            .commit()
     }
-    val set: MutableSet<T> = mutableSetOf()
-    list.forEach { set.add(it) }
-    return set.toList()
 }

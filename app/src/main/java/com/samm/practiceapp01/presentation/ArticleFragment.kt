@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.samm.practiceapp01.R
-import com.samm.practiceapp01.util.Observers
 import com.samm.practiceapp01.util.ViewUtility
 
 class ArticleFragment : Fragment() {
@@ -25,15 +24,12 @@ class ArticleFragment : Fragment() {
     private lateinit var searchField: SearchView
     private lateinit var progressBar: ProgressBar
     private lateinit var backToTopButton: FloatingActionButton
-    private lateinit var observers: Observers
     private lateinit var layoutManager: LayoutManager
-    private lateinit var nextButton: Button
-    private lateinit var prevButton: Button
     private lateinit var errorMessageTV: TextView
     private var pageNumber = 1
+    private var results = false
+    private var observeResults: Boolean = false
 
-    private val pageLimit = 50
-    private var pageOffset = 0
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -49,8 +45,6 @@ class ArticleFragment : Fragment() {
         searchField = view.findViewById(R.id.search)
         progressBar = view.findViewById(R.id.progress_bar)
         backToTopButton = view.findViewById(R.id.back_to_top_button)
-        nextButton = view.findViewById(R.id.next_button)
-        prevButton = view.findViewById(R.id.previous_button)
         errorMessageTV = view.findViewById(R.id.error_message_text_view)
 
         // Hide these view until search button is clicked
@@ -61,6 +55,8 @@ class ArticleFragment : Fragment() {
         adapter = NewsAdapter()
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
 
+        observeResults = observeResults(newsViewModel)
+
         return view
     }
 
@@ -69,15 +65,11 @@ class ArticleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         progressBar.visibility = View.GONE
         setUpRecyclerView(layoutManager)
-        val totalItemCount = recyclerView.adapter?.itemCount
         ifErrorMessage()
-       // observers = activity?.let { _activity -> createObservers(_activity) }!!
-        //newsViewModel.newsData(this, adapter)
-        newsViewModel.newsDataByPage(pageLimit, pageOffset, this, adapter)
 
+        newsViewModel.newsData(viewLifecycleOwner, adapter)
         viewUtility.hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
-        nextButton.setOnClickListener { nextButtonClickListener() }
-        prevButton.setOnClickListener { previousButtonClickListener() }
+
         backToTopButton.setOnClickListener { backToTopButtonClickListener() }
 
         // Get News Data when search button in keyboard is clicked
@@ -94,10 +86,8 @@ class ArticleFragment : Fragment() {
                 return false
             }
         })
-    }
 
-    private fun clearCache(){
-        newsViewModel.refreshCache()
+        recyclerView.isVerticalScrollBarEnabled = true
     }
 
     private fun setUpRecyclerView(layoutManager: LayoutManager){
@@ -106,17 +96,33 @@ class ArticleFragment : Fragment() {
     }
 
     private fun showProgressBarOrLoadArticles(page: Int, search: String) {
-        viewUtility.showProgressBarIfLoading(newsViewModel, viewLifecycleOwner, progressBar)
-        if (search.isEmpty()){
-            Toast.makeText(
-                activity, "Please enter a search term",
-                Toast.LENGTH_LONG
-            ).show()
-        } else {
-            clearCache()
-            newsViewModel.getArticles(page, search)
-            viewUtility.hideKeyboard(activity)
+
+        when {
+            search.isEmpty() -> {
+                Toast.makeText(
+                    activity, "Please enter a search term", Toast.LENGTH_LONG
+                ).show()
+            }
+            observeResults -> {
+                Toast.makeText(
+                    activity, "No Results Found", Toast.LENGTH_LONG
+                ).show()
+            }
+            else -> {
+                // Get Data
+                viewUtility.showProgressBarIfLoading(newsViewModel, viewLifecycleOwner, progressBar)
+                newsViewModel.clearCache()
+                newsViewModel.getArticles(page, search)
+                viewUtility.hideKeyboard(activity)
+            }
         }
+    }
+
+    private fun observeResults(viewModel: NewsViewModel): Boolean{
+        viewModel.noResults.observe(viewLifecycleOwner){ noResults ->
+            results = noResults
+        }
+        return results
     }
 
     private fun backToTopButtonClickListener() {
@@ -124,19 +130,7 @@ class ArticleFragment : Fragment() {
         backToTopButton.visibility = View.GONE
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun nextButtonClickListener() {
-        pageOffset += 10
-        newsViewModel.newsDataByPage(pageLimit, pageNumber, this, adapter)
-
-    }
-    private fun previousButtonClickListener() {
-        if (pageNumber != 0){
-            pageNumber -= 10
-            newsViewModel.newsDataByPage(pageLimit, pageNumber, this, adapter)
-        }
-    }
-
+    // Don't know if this is really working
     private fun ifErrorMessage(){
         newsViewModel.error.observe(viewLifecycleOwner){ error ->
             errorMessageTV.text = error
