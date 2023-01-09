@@ -4,25 +4,37 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
 /*
-    Todo (Issues):
-        - Not all page data will load - possibly due to the free version of the API
- */
-
-/*
     Todo (Tasks):
-        - Room database for caching
-        - Sealed Class for state
-        - Tests
-        - Clean up
-        - Bottom Nav drawer
-        - NavGraph
-        - Change project name
-        - ViewBinding
+        - Paging
+        - Icon for Splash screen / Play Store
+        - Change Project name
         - Hilt
         - Create a Breaking News Fragment. - Optional
-        - Sorting the list
         - Tests
         - Play Store
+ */
+/*
+    Todo (Tests):
+        - Api to Database integration
+        - Database to Repository integration
+        - Repo to ViewModel integration
+        - ViewModel to UI integration
+        - Unit tests for business logic stuff
+        - UI Tests:
+            - Cards are loaded and are present
+            - Search view is present
+            - Title is present in actionbar
+            - Back to top button is present when scrolled and hidden when at the top
+            - Colors of each component
+            - Cards are clickable
+            - Cards open Web View fragment when clicked
+            - All data is loaded into Recycler View
+            - Back button brings user to Main Screen
+            - When error is present - Error message is displayed
+            - Scroll bar is present
+            - User can type in search field
+            - Data is retrieved when searched
+            - Progress bar is present when loading and hidden after
  */
 
 class MainActivity : AppCompatActivity() {

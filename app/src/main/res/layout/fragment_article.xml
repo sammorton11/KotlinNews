@@ -23,7 +23,8 @@
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@color/tea_green"
+        android:background="@color/cardview_light_background"
+        android:clipToOutline="true"
         android:iconifiedByDefault="true"
         android:padding="5dp"
         android:queryHint="Search..."
@@ -47,35 +48,10 @@
         app:layout_constraintTop_toBottomOf="@+id/search"
         app:layout_constraintVertical_bias="0.049">
 
-        <LinearLayout
-            android:id="@+id/results_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="start"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/resultsLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="5dp"
-                android:text="Results:"
-                android:textStyle="bold"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/resultsAmount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="11sp" />
-
-        </LinearLayout>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/news_list"
+            android:layout_marginTop="10dp"
+            android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
@@ -100,28 +76,5 @@
         app:backgroundTint="@color/light_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/previous_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:text="Previous"
-        android:backgroundTint="@color/tuscan_red"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/next_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:layout_marginBottom="16dp"
-        android:text="Next"
-        android:backgroundTint="@color/tuscan_red"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/previous_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
