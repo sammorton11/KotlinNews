@@ -23,19 +23,10 @@ To improve the app's testability and maintainability, I am planning to implement
 
 - Room Database: This will allow the app to quickly display data to the user, even when there is no internet connection. It can also improve the user experience by reducing the amount of time it takes to load data. By using the Room database, I can also make the app more testable by providing a local data source for unit tests. This will allow me to test the app's logic without making actual network requests.
 
-- Additional unit tests for business logic functions: I will write unit tests to cover the business logic of the app, including the functions that parse the API response and update the app's LiveData objects.
+- Additional unit tests for business logic functions
 
-- Integration tests for the Repository and ViewModel: I will write integration tests to verify that the Repository and ViewModel are working correctly together.
-
-- Integration tests for the ViewModel and UI: I will write integration tests to verify that the ViewModel is correctly updating the app's UI.
-End-to-End tests: I will write end-to-end tests to test the app's functionality from the user's perspective, including making network requests and verifying that the correct data is displayed on the screen.
+- Integration tests
 
 
 The goal of this project is to create a well-designed, maintainable, and fully-tested news application that allows users to easily search for and browse the latest news articles.
-
-Current Version UI:
-
-
-
-![Screen Shot 2023-01-06 at 6 19 10 PM](https://user-images.githubusercontent.com/86651172/211121312-6462714a-b2f9-4c51-a265-2566c835756c.png) ![Screen Shot 2023-01-06 at 6 16 21 PM](https://user-images.githubusercontent.com/86651172/211121325-8a76a112-131d-43db-a53a-72179b151f34.png) ![Screen Shot 2023-01-06 at 6 18 40 PM](https://user-images.githubusercontent.com/86651172/211121332-da41113e-90f4-4b4f-bfa7-5692dba98e8f.png)
 
