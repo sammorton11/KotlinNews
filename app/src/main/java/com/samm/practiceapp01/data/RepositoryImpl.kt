@@ -16,7 +16,7 @@ class RepositoryImpl (private val api: NewsApi, private val myDao: NewsDao): Rep
     val noResults: MutableLiveData<Boolean> = MutableLiveData()
     val getNewsFromDatabase = myDao.getAllNewsItems()
 
-    suspend fun clearCache() {
+    override suspend fun clearCache() {
         myDao.clearCache()
     }
     override suspend fun fetchArticles(search: String, page: Int) {
@@ -24,13 +24,18 @@ class RepositoryImpl (private val api: NewsApi, private val myDao: NewsDao): Rep
 
         try {
             val response = getNews(search, page)
-
+            Log.d("Response?", response.isSuccessful.toString())
             if (response.isSuccessful) {
-                clearCache()
-                response.body()?.let { newsItem -> addArticleToDatabase(newsItem) }
+                noResults.postValue(false)
+                response.body()?.let { newsItem ->
+                    clearCache()
+                    addArticleToDatabase(newsItem)
+                }
+
             } else {
                 val parsedErrorResponse = parseErrorBody(response)
                 errorMessageLD.postValue(parsedErrorResponse)
+                noResults.postValue(true)
                 Log.d("Error Response", parsedErrorResponse)
             }
         } catch (e: Exception){
@@ -40,11 +45,11 @@ class RepositoryImpl (private val api: NewsApi, private val myDao: NewsDao): Rep
     }
 
     // API call
-    private suspend fun getNews(search: String, page: Int): Response<NewsItem> {
+    override suspend fun getNews(search: String, page: Int): Response<NewsItem> {
         return api.getNews(searchQuery = search, pageNumber = page, pageSize = PAGE_SIZE)
     }
 
-    private suspend fun addArticleToDatabase(newsItem: NewsItem){
+    override suspend fun addArticleToDatabase(newsItem: NewsItem){
         newsItem.articles.forEach { article ->
             myDao.insert(article)
         }

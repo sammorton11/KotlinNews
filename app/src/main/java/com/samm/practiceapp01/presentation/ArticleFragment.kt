@@ -2,11 +2,12 @@ package com.samm.practiceapp01.presentation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,8 +30,6 @@ class ArticleFragment : Fragment() {
     private var pageNumber = 1
     private var results = false
     private var observeResults: Boolean = false
-
-
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +54,7 @@ class ArticleFragment : Fragment() {
         adapter = NewsAdapter()
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
 
-        observeResults = observeResults(newsViewModel)
+
 
         return view
     }
@@ -66,6 +65,7 @@ class ArticleFragment : Fragment() {
         progressBar.visibility = View.GONE
         setUpRecyclerView(layoutManager)
         ifErrorMessage()
+        observeResults = observeResults(newsViewModel)
 
         newsViewModel.newsData(viewLifecycleOwner, adapter)
         viewUtility.hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
@@ -77,50 +77,72 @@ class ArticleFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
                     pageNumber = 1
-                    showProgressBarOrLoadArticles(pageNumber, query)
+                    fetchNewsData(pageNumber, query)
                 }
                 return false
             }
+
             // Don't need this so just return false
             override fun onQueryTextChange(newText: String?): Boolean {
                 return false
             }
         })
 
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.action_bar_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle item selection
+                return when (menuItem.itemId) {
+                    R.id.refresh -> {
+                        viewUtility.observeLoading(newsViewModel, viewLifecycleOwner, progressBar)
+                        newsViewModel.getArticles(pageNumber, searchField.query.toString())
+                        true
+                    }
+                    R.id.clear -> {
+                        newsViewModel.clearCache()
+                        adapter.clearList()
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         recyclerView.isVerticalScrollBarEnabled = true
     }
+
 
     private fun setUpRecyclerView(layoutManager: LayoutManager){
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
     }
 
-    private fun showProgressBarOrLoadArticles(page: Int, search: String) {
+    private fun fetchNewsData(page: Int, search: String) {
 
-        when {
-            search.isEmpty() -> {
-                Toast.makeText(
-                    activity, "Please enter a search term", Toast.LENGTH_LONG
-                ).show()
-            }
-            observeResults -> {
-                Toast.makeText(
-                    activity, "No Results Found", Toast.LENGTH_LONG
-                ).show()
-            }
-            else -> {
-                // Get Data
-                viewUtility.showProgressBarIfLoading(newsViewModel, viewLifecycleOwner, progressBar)
-                newsViewModel.clearCache()
-                newsViewModel.getArticles(page, search)
-                viewUtility.hideKeyboard(activity)
-            }
+        if(search.isEmpty()){
+            Toast.makeText(
+                activity, "Please enter a search term", Toast.LENGTH_LONG
+            ).show()
+        } else {
+            // Get Data
+            viewUtility.observeLoading(newsViewModel, viewLifecycleOwner, progressBar)
+            newsViewModel.getArticles(page, search)
+            observeResults(newsViewModel)
+            viewUtility.hideKeyboard(activity)
         }
     }
 
-    private fun observeResults(viewModel: NewsViewModel): Boolean{
+    private fun observeResults(viewModel: NewsViewModel): Boolean {
         viewModel.noResults.observe(viewLifecycleOwner){ noResults ->
             results = noResults
+        }
+        if (results){
+            Toast.makeText(context, "No Results", Toast.LENGTH_LONG).show()
         }
         return results
     }

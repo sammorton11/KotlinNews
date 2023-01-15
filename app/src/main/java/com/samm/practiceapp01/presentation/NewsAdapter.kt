@@ -67,4 +67,9 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
         newsList.addAll(articles)
         notifyDataSetChanged()
     }
+    @SuppressLint("NotifyDataSetChanged")
+    fun clearList(){
+        newsList.clear()
+        notifyDataSetChanged()
+    }
 }

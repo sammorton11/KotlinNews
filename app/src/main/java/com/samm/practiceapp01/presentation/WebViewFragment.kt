@@ -16,7 +16,6 @@ class WebViewFragment : Fragment() {
 
     companion object {
         const val ARG_URL = "arg_url"
-
         fun newInstance(url: String): Fragment {
             val args = Bundle()
             args.putString(ARG_URL, url)

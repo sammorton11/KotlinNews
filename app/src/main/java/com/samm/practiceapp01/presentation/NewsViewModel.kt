@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.samm.practiceapp01.data.RepositoryImpl
 import com.samm.practiceapp01.data.RetrofitInstance
 import com.samm.practiceapp01.data.database.NewsDatabase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class NewsViewModel(application: Application) : AndroidViewModel(application) {
@@ -19,12 +20,19 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
     val error: MutableLiveData<String> = repositoryImpl.errorMessageLD
     val noResults: MutableLiveData<Boolean> = repositoryImpl.noResults
 
-    private fun fetchArticles(search: String, page: Int) = viewModelScope.launch {
+    private fun fetchArticles(search: String, page: Int) = viewModelScope.launch(Dispatchers.IO)  {
         repositoryImpl.fetchArticles(search, page)
     }
 
-    fun clearCache() = viewModelScope.launch { repositoryImpl.clearCache() }
-    fun getArticles(page: Int, search: String) { fetchArticles(search, page) }
+    fun clearCache() {
+        viewModelScope.launch(Dispatchers.Main) {
+            repositoryImpl.clearCache()
+        }
+    }
+    fun getArticles(page: Int, search: String) {
+        fetchArticles(search, page)
+
+    }
 
     fun newsData(owner: LifecycleOwner, adapter: NewsAdapter){
         val newsList = repositoryImpl.getNewsFromDatabase

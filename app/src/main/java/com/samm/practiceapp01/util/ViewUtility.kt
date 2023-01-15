@@ -7,6 +7,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isEmpty
+import androidx.core.view.isNotEmpty
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,8 +39,10 @@ class ViewUtility {
                     val firstVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager)
                         .findFirstVisibleItemPosition()
 
+
+
                     // Check if the first visible item is the first item in the list
-                    if (firstVisibleItemPosition == 0) {
+                    if (firstVisibleItemPosition == 0 || recyclerView.isEmpty()) {
                         toolbar.visibility = View.VISIBLE
                         backToTopButton.visibility = View.GONE
                     } else {
@@ -49,7 +53,7 @@ class ViewUtility {
             })
     }
 
-    fun showProgressBarIfLoading(
+    fun observeLoading(
         newsViewModel: NewsViewModel,
         viewLifecycleOwner: LifecycleOwner,
         progressBar: ProgressBar
