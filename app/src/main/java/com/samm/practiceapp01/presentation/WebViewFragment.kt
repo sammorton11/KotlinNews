@@ -54,7 +54,6 @@ class WebViewFragment : Fragment() {
 class MyWebViewClient : WebViewClient() {
     @Deprecated("Deprecated in Java")
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-        // Handle the URL loading in the web view
         view.loadUrl(url)
         return true
     }

@@ -1,18 +1,22 @@
 package com.samm.practiceapp01.presentation
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.samm.practiceapp01.R
 import com.samm.practiceapp01.domain.models.Articles
-import com.samm.practiceapp01.util.Constants.imageHeight
-import com.samm.practiceapp01.util.Constants.imageWidth
-import com.samm.practiceapp01.util.ViewUtility
+import com.samm.practiceapp01.core.Constants.imageHeight
+import com.samm.practiceapp01.core.Constants.imageWidth
+import com.samm.practiceapp01.core.ViewUtility
 
 class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
@@ -40,19 +44,23 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val newsItem = newsList[position]
         val imageUrl = newsItem.url
+        val formattedDate = newsItem.publishedAt?.let { viewUtility.formatDate(it) }
+        val newsImage: ImageView = holder.newsImage
+        val context: Context = newsImage.context
 
         holder.newsTitle.text = newsItem.title
         holder.newsDescription.text = newsItem.description
-        val formattedDate = newsItem.publishedAt?.let { viewUtility.formatDate(it) }
         holder.date.text = formattedDate
 
-        // News Image
-        viewUtility.loadNewsImage(holder, newsItem, imageWidth, imageHeight)
+        Glide.with(context)
+            .load(imageUrl)
+            .override(imageWidth, imageHeight) // resizing
+            .centerCrop()
+            .into(newsImage)
 
-        // Open Website in web view fragment
         holder.card.setOnClickListener { view ->
             if (imageUrl != null) {
-                viewUtility.openWebViewFragment(view, imageUrl)
+                openWebViewFragment(view, imageUrl)
             }
         }
     }
@@ -71,5 +79,16 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
     fun clearList(){
         newsList.clear()
         notifyDataSetChanged()
+    }
+
+    private fun openWebViewFragment(view: View, url: String) {
+        val activity = view.context as AppCompatActivity
+        val myFragment = WebViewFragment.newInstance(url)
+        Log.d("URL:", url)
+        activity.supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container_view, myFragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

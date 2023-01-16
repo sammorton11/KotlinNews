@@ -1,9 +1,6 @@
 package com.samm.practiceapp01.domain
 
-import android.util.Log
 import com.samm.practiceapp01.domain.models.NewsItem
-import com.samm.practiceapp01.util.Constants
-import org.json.JSONObject
 import retrofit2.Response
 
 interface Repository {

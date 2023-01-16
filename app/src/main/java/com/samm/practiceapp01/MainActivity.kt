@@ -4,13 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
 /*
-    Todo (Tasks):
-        - Paging
-        - Icon for Splash screen / Play Store
-        - Change Project name
-        - Hilt
+    Todo (Tasks)
         - Create a Breaking News Fragment. - Optional
-        - Tests
+        - Tests need to be changes since adding the database for caching purposes
         - Play Store
  */
 /*

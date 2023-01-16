@@ -1,7 +1,7 @@
 package com.samm.practiceapp01.data
 
 import com.samm.practiceapp01.domain.models.NewsItem
-import com.samm.practiceapp01.util.Constants.API_KEY
+import com.samm.practiceapp01.core.Constants.API_KEY
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
