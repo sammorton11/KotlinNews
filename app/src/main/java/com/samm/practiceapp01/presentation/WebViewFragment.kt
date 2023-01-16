@@ -16,7 +16,6 @@ class WebViewFragment : Fragment() {
 
     companion object {
         const val ARG_URL = "arg_url"
-
         fun newInstance(url: String): Fragment {
             val args = Bundle()
             args.putString(ARG_URL, url)
@@ -55,7 +54,6 @@ class WebViewFragment : Fragment() {
 class MyWebViewClient : WebViewClient() {
     @Deprecated("Deprecated in Java")
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-        // Handle the URL loading in the web view
         view.loadUrl(url)
         return true
     }
