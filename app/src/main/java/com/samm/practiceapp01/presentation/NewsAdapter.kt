@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.samm.practiceapp01.R
@@ -18,12 +19,13 @@ import com.samm.practiceapp01.core.Constants.imageHeight
 import com.samm.practiceapp01.core.Constants.imageWidth
 import com.samm.practiceapp01.core.ViewUtility
 
-class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+class NewsAdapter(private val context: Context) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     private val newsList = ArrayList<Articles>()
     private val viewUtility = ViewUtility()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         var newsTitle: TextView = itemView.findViewById(R.id.news_title)
         val newsDescription: TextView = itemView.findViewById(R.id.news_description)
         val newsImage: ImageView = itemView.findViewById(R.id.news_image)
@@ -43,10 +45,9 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
     // Bind Data to the views
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val newsItem = newsList[position]
-        val imageUrl = newsItem.url
+        val imageUrl = newsItem.urlToImage
         val formattedDate = newsItem.publishedAt?.let { viewUtility.formatDate(it) }
         val newsImage: ImageView = holder.newsImage
-        val context: Context = newsImage.context
 
         holder.newsTitle.text = newsItem.title
         holder.newsDescription.text = newsItem.description
