@@ -23,18 +23,13 @@ class RepositoryImpl (private val api: NewsApi, private val myDao: NewsDao): Rep
         loading.postValue(true)
         try {
             val response = getNews(search, page)
-            when {
-                response.isSuccessful -> {
-                    response.body()?.let { newsItem ->
-                        clearCache()
-                        addArticleToDatabase(newsItem)
-                    }
-                }
-                response.errorBody() != null -> {
-                    val parsedErrorResponse = parseErrorBody(response)
-                    errorString = parsedErrorResponse
-                    errorMessageLD.postValue(errorString)
-                }
+            if (response.isSuccessful) {
+                val newsItem = response.body()
+                clearCache()
+                newsItem?.let { addArticleToDatabase(it) }
+            } else {
+                val errorMessage = parseErrorBody(response)
+                throw Exception(errorMessage)
             }
         } catch (e: Exception){
             errorMessageLD.postValue(errorString)

@@ -52,7 +52,7 @@ class ArticleFragment : Fragment() {
         layoutManager = LinearLayoutManager(activity)
         backToTopButton.setImageResource(R.drawable.ic_baseline_arrow_upward_24)
 
-        adapter = NewsAdapter()
+        adapter = NewsAdapter(requireContext())
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
 
 
