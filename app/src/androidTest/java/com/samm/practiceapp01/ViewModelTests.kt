@@ -5,13 +5,9 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.samm.practiceapp01.data.NewsApi
 import com.samm.practiceapp01.data.RepositoryImpl
 import com.samm.practiceapp01.data.database.NewsDao
 import com.samm.practiceapp01.data.database.NewsDatabase
-import com.samm.practiceapp01.presentation.NewsViewModel
-import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.After
