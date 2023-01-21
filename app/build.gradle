@@ -31,12 +31,12 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        testOptions {
-            execution 'ANDROID_TEST_ORCHESTRATOR'
-            animationsDisabled true
-            unitTests.returnDefaultValues = true
-            emulatorSnapshots.maxSnapshotsForTestFailures = 0
-        }
+//        testOptions {
+//            execution 'ANDROID_TEST_ORCHESTRATOR'
+//            animationsDisabled true
+//            unitTests.returnDefaultValues = true
+//            emulatorSnapshots.maxSnapshotsForTestFailures = 0
+//        }
     }
 
     buildTypes {
@@ -73,13 +73,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // Coroutines Tests
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
 
     // Mockk
-    androidTestImplementation 'io.mockk:mockk-android:1.13.3'
     testImplementation 'io.mockk:mockk-android:1.13.3'
 
     // Glide
@@ -102,4 +101,5 @@ dependencies {
     implementation "androidx.room:room-runtime:2.5.0"
     kapt "androidx.room:room-compiler:2.5.0"
     implementation "androidx.room:room-ktx:2.5.0"
+
 }

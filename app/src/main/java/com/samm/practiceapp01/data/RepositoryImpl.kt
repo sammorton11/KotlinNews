@@ -23,6 +23,7 @@ class RepositoryImpl (private val api: NewsApi, private val myDao: NewsDao): Rep
         loading.postValue(true)
         try {
             val response = getNews(search, page)
+            Log.d("getNews", response.body()!!.status)
             if (response.isSuccessful) {
                 val newsItem = response.body()
                 clearCache()
