@@ -21,18 +21,17 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
     val loading: MutableLiveData<Boolean> = repositoryImpl.loading
     val error: MutableLiveData<String> = repositoryImpl.errorMessageLD
 
-    private fun fetchArticles(search: String, page: Int) = viewModelScope.launch(Dispatchers.IO)  {
+    private fun fetchArticles(search: String, page: Int) = viewModelScope.launch(Dispatchers.IO) {
         repositoryImpl.fetchArticles(search, page)
+    }
+    fun getArticles(page: Int, search: String) {
+        fetchArticles(search, page)
     }
 
     fun clearCache() {
         viewModelScope.launch(Dispatchers.Main) {
             repositoryImpl.clearCache()
         }
-    }
-    fun getArticles(page: Int, search: String) {
-        fetchArticles(search, page)
-
     }
 
     fun newsData(owner: LifecycleOwner, adapter: NewsAdapter){

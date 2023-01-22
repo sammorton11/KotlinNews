@@ -25,19 +25,21 @@
 
             <ImageView
                 android:id="@+id/news_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="News Image" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/news_image"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/avatars" />
 
             <TextView
                 android:id="@+id/news_title"
                 android:layout_marginStart="15dp"
                 android:layout_marginBottom="7dp"
                 android:layout_marginTop="10dp"
-                android:text="Title"
+                android:text="@string/title"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:accessibilityHeading="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 tools:targetApi="p" />
@@ -55,7 +57,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginStart="1dp"
-                    android:text="Published: " />
+                    android:text="@string/published" />
 
                 <TextView
                     android:id="@+id/article_date"
@@ -63,20 +65,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="10dp"
-                    android:text="Date" />
+                    android:text="@string/date" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/news_description"
                 android:layout_margin="15dp"
-                android:text="Description"
+                android:text="@string/description"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="View More"
+                android:layout_height="wrap_content"
+                android:text="@string/view_more"
                 android:textSize="11sp"
                 android:gravity="center"
                 android:layout_marginTop="15dp"
