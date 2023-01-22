@@ -5,12 +5,9 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.samm.practiceapp01.data.RepositoryImpl
 import com.samm.practiceapp01.data.database.NewsDao
 import com.samm.practiceapp01.data.database.NewsDatabase
 import com.samm.practiceapp01.domain.Repository
-import com.samm.practiceapp01.domain.models.Articles
-import com.samm.practiceapp01.domain.models.NewsItem
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers
 import org.junit.After
@@ -19,7 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
 
-
+// In-progress
 class RepositoryDatabaseTest {
     @get:Rule(order = 0)
     val testRule = ActivityScenarioRule(MainActivity::class.java)
@@ -29,7 +26,7 @@ class RepositoryDatabaseTest {
     private lateinit var dao: NewsDao
 
     @Before
-    fun createDb() {
+    fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(context, NewsDatabase::class.java).build()
         dao = db.myDao()
@@ -38,7 +35,7 @@ class RepositoryDatabaseTest {
 
     @After
     @Throws(IOException::class)
-    fun closeDb() {
+    fun teardown() {
         db.close()
     }
 
@@ -46,6 +43,7 @@ class RepositoryDatabaseTest {
     fun databaseTest(): Unit = runBlocking {
         assertThat(
             repository.getNews("", 1).isSuccessful,
-            Matchers.equalTo(true))
+            Matchers.equalTo(true)
+        )
     }
 }

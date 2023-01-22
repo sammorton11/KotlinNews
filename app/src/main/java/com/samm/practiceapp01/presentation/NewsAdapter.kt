@@ -10,14 +10,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.samm.practiceapp01.R
-import com.samm.practiceapp01.domain.models.Articles
 import com.samm.practiceapp01.core.Constants.imageHeight
 import com.samm.practiceapp01.core.Constants.imageWidth
 import com.samm.practiceapp01.core.ViewUtility
+import com.samm.practiceapp01.domain.models.Articles
 
 class NewsAdapter(private val context: Context) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
@@ -41,8 +40,6 @@ class NewsAdapter(private val context: Context) : RecyclerView.Adapter<NewsAdapt
 
         return ViewHolder(view)
     }
-
-    // Bind Data to the views
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val newsItem = newsList[position]
         val imageUrl = newsItem.urlToImage
