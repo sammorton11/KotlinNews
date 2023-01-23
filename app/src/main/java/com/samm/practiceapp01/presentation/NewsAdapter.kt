@@ -2,13 +2,11 @@ package com.samm.practiceapp01.presentation
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -18,10 +16,11 @@ import com.samm.practiceapp01.core.Constants.imageWidth
 import com.samm.practiceapp01.core.ViewUtility
 import com.samm.practiceapp01.domain.models.Articles
 
-class NewsAdapter(private val context: Context) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+class NewsAdapter(private val context: Context, private val cardClick: OnCardClick) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     private val newsList = ArrayList<Articles>()
     private val viewUtility = ViewUtility()
+
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -56,10 +55,8 @@ class NewsAdapter(private val context: Context) : RecyclerView.Adapter<NewsAdapt
             .centerCrop()
             .into(newsImage)
 
-        holder.card.setOnClickListener { view ->
-            if (imageUrl != null) {
-                openWebViewFragment(view, imageUrl)
-            }
+        holder.card.setOnClickListener {
+            cardClick.onCardClick(newsItem)
         }
     }
 
@@ -79,14 +76,7 @@ class NewsAdapter(private val context: Context) : RecyclerView.Adapter<NewsAdapt
         notifyDataSetChanged()
     }
 
-    private fun openWebViewFragment(view: View, url: String) {
-        val activity = view.context as AppCompatActivity
-        val myFragment = WebViewFragment.newInstance(url)
-        Log.d("URL:", url)
-        activity.supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container_view, myFragment)
-            .addToBackStack(null)
-            .commit()
+    interface OnCardClick {
+        fun onCardClick(article: Articles?)
     }
 }

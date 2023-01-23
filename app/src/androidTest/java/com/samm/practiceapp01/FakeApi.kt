@@ -1,6 +1,6 @@
 package com.samm.practiceapp01
 
-import com.samm.practiceapp01.data.NewsApi
+import com.samm.practiceapp01.data.network.NewsApi
 import com.samm.practiceapp01.domain.models.Articles
 import com.samm.practiceapp01.domain.models.NewsItem
 import retrofit2.Response

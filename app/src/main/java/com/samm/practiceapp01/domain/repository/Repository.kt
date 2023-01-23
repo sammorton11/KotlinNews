@@ -1,4 +1,4 @@
-package com.samm.practiceapp01.domain
+package com.samm.practiceapp01.domain.repository
 
 import com.samm.practiceapp01.domain.models.NewsItem
 import retrofit2.Response
