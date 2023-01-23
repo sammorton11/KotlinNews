@@ -7,7 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.samm.practiceapp01.data.database.NewsDao
 import com.samm.practiceapp01.data.database.NewsDatabase
-import com.samm.practiceapp01.domain.Repository
+import com.samm.practiceapp01.domain.repository.Repository
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers
 import org.junit.After

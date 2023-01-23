@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/articleFragment">
+
+    <fragment
+        android:id="@+id/articleFragment"
+        android:name="com.samm.practiceapp01.presentation.ArticleFragment"
+        android:label="ArticleFragment" >
+        <action
+            android:id="@+id/action_articleFragment_to_webViewFragment2"
+            app:destination="@id/webViewFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/webViewFragment2"
+        android:name="com.samm.practiceapp01.presentation.WebViewFragment"
+        android:label="fragment_web_view"
+        tools:layout="@layout/fragment_web_view" />
+</navigation>

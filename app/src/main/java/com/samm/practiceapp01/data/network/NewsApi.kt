@@ -1,4 +1,4 @@
-package com.samm.practiceapp01.data
+package com.samm.practiceapp01.data.network
 
 import com.samm.practiceapp01.domain.models.NewsItem
 import com.samm.practiceapp01.core.Constants.API_KEY

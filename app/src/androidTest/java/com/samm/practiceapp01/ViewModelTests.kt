@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.samm.practiceapp01.data.RepositoryImpl
+import com.samm.practiceapp01.data.repository.RepositoryImpl
 import com.samm.practiceapp01.data.database.NewsDao
 import com.samm.practiceapp01.data.database.NewsDatabase
 import junit.framework.TestCase.assertEquals

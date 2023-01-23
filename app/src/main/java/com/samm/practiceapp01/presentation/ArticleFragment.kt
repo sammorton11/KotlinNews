@@ -9,18 +9,21 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.samm.practiceapp01.R
 import com.samm.practiceapp01.core.ViewUtility
+import com.samm.practiceapp01.domain.models.Articles
 
-class ArticleFragment : Fragment() {
+class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
 
-    val viewUtility = ViewUtility()
+    private val viewUtility = ViewUtility()
     private lateinit var newsViewModel: NewsViewModel
     private lateinit var adapter: NewsAdapter
     private lateinit var recyclerView: RecyclerView
@@ -30,6 +33,7 @@ class ArticleFragment : Fragment() {
     private lateinit var layoutManager: LayoutManager
     private lateinit var errorMessageTV: TextView
     private var pageNumber = 1
+    private lateinit var navController: NavController
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -52,9 +56,8 @@ class ArticleFragment : Fragment() {
         layoutManager = LinearLayoutManager(activity)
         backToTopButton.setImageResource(R.drawable.ic_baseline_arrow_upward_24)
 
-        adapter = NewsAdapter(requireContext())
+        adapter = NewsAdapter(requireContext(), this)
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
-
 
         return view
     }
@@ -64,26 +67,28 @@ class ArticleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         progressBar.visibility = View.GONE
         setUpRecyclerView(layoutManager)
+        navControllerSetup()
+
+        val menuHost: MenuHost = requireActivity()
         newsViewModel.newsData(viewLifecycleOwner, adapter)
         hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
         backToTopButton.setOnClickListener { backToTopButtonClickListener() }
+
         // Get News Data when search button in keyboard is clicked
         searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
-                    pageNumber = 1
                     fetchNewsData(pageNumber, query)
-                    ifErrorMessage()
                 }
                 return false
             }
-
             // Don't need this so just return false
             override fun onQueryTextChange(newText: String?): Boolean {
                 return false
             }
         })
-        val menuHost: MenuHost = requireActivity()
+
+
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.action_bar_menu, menu)
@@ -96,7 +101,6 @@ class ArticleFragment : Fragment() {
                             newsViewModel.clearCache()
                             adapter.clearList()
                         }
-
                         true
                     }
                     else -> false
@@ -108,6 +112,11 @@ class ArticleFragment : Fragment() {
         recyclerView.isVerticalScrollBarEnabled = true
     }
 
+    private fun navControllerSetup() {
+        val navHostFragment = activity?.supportFragmentManager
+            ?.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+    }
 
     private fun setUpRecyclerView(layoutManager: LayoutManager){
         recyclerView.layoutManager = layoutManager
@@ -122,24 +131,28 @@ class ArticleFragment : Fragment() {
             ).show()
         } else {
             // Get Data
-            observeLoading(newsViewModel, viewLifecycleOwner, progressBar, recyclerView)
-            newsViewModel.getArticles(page, search)
+            newsViewModel.getArticles(search, page)
+            newsViewModel._newsState.observe(viewLifecycleOwner) { state ->
+                when (state) {
+                    is NewsDataState.Loading -> progressBar.visibility = View.VISIBLE
+                    is NewsDataState.Success -> state.data?.let {
+                        adapter.setNews(it)
+                        progressBar.visibility = View.GONE
+                    }
+                    is NewsDataState.Error -> {
+                        errorMessageTV.text = state.message
+                        progressBar.visibility = View.GONE
+                    }
+                    else -> {}
+                }
+            }
             viewUtility.hideKeyboard(activity)
         }
     }
 
-
     private fun backToTopButtonClickListener() {
         recyclerView.smoothScrollToPosition(0)
         backToTopButton.visibility = View.GONE
-    }
-
-    // Don't know if this is really working
-    private fun ifErrorMessage(){
-        newsViewModel.error.observe(viewLifecycleOwner){ error ->
-            errorMessageTV.visibility = View.VISIBLE
-            errorMessageTV.text = error
-        }
     }
 
     private fun hideViewsWhenScrolled(
@@ -167,21 +180,11 @@ class ArticleFragment : Fragment() {
         })
     }
 
-    private fun observeLoading(
-        newsViewModel: NewsViewModel,
-        viewLifecycleOwner: LifecycleOwner,
-        progressBar: ProgressBar,
-        recyclerView: RecyclerView
-    ){
-        newsViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) {
-                progressBar.visibility = View.VISIBLE
-                recyclerView.visibility = View.GONE
-
-            } else {
-                progressBar.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
-            }
+    override fun onCardClick(article: Articles?) {
+        val bundle = Bundle()
+        if (article != null) {
+            bundle.putString("url", article.url)
         }
+        navController.navigate(R.id.webViewFragment2, bundle)
     }
 }

@@ -1,4 +1,4 @@
-package com.samm.practiceapp01.data
+package com.samm.practiceapp01.data.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
