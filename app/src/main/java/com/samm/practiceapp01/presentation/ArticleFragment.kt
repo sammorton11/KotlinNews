@@ -10,7 +10,6 @@ import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,8 +50,6 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         backToTopButton = view.findViewById(R.id.back_to_top_button)
         errorMessageTV = view.findViewById(R.id.error_message_text_view)
 
-        // Hide these view until search button is clicked
-        backToTopButton.visibility = View.VISIBLE
         layoutManager = LinearLayoutManager(activity)
         backToTopButton.setImageResource(R.drawable.ic_baseline_arrow_upward_24)
 
@@ -62,19 +59,17 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         return view
     }
 
-    // define the fragment's behavior
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressBar.visibility = View.GONE
         setUpRecyclerView(layoutManager)
         navControllerSetup()
+        newsViewModel.setNewsFromDatabase(viewLifecycleOwner, adapter)
 
         val menuHost: MenuHost = requireActivity()
-        newsViewModel.newsData(viewLifecycleOwner, adapter)
         hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
         backToTopButton.setOnClickListener { backToTopButtonClickListener() }
 
-        // Get News Data when search button in keyboard is clicked
         searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
@@ -88,12 +83,11 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
             }
         })
 
-
+        // Action Menu -- Add a refresh button
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.action_bar_menu, menu)
             }
-
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.clear -> {
@@ -106,9 +100,7 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
                     else -> false
                 }
             }
-
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
         recyclerView.isVerticalScrollBarEnabled = true
     }
 
@@ -126,26 +118,14 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
     private fun fetchNewsData(page: Int, search: String) {
 
         if (search.isEmpty()) {
-            Toast.makeText(
-                activity, "Please enter a search term", Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(activity, "Search term is missing", Toast.LENGTH_LONG).show()
         } else {
-            // Get Data
-            newsViewModel.getArticles(search, page)
-            newsViewModel._newsState.observe(viewLifecycleOwner) { state ->
-                when (state) {
-                    is NewsDataState.Loading -> progressBar.visibility = View.VISIBLE
-                    is NewsDataState.Success -> state.data?.let {
-                        adapter.setNews(it)
-                        progressBar.visibility = View.GONE
-                    }
-                    is NewsDataState.Error -> {
-                        errorMessageTV.text = state.message
-                        progressBar.visibility = View.GONE
-                    }
-                    else -> {}
-                }
-            }
+
+            // Get Data from Database
+            newsViewModel.fetchArticles(search, page)
+
+            // Check if loading, success, or error
+            newsViewModel.getState(this, adapter, progressBar, requireContext())
             viewUtility.hideKeyboard(activity)
         }
     }

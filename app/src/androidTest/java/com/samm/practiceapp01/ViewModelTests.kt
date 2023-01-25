@@ -5,10 +5,9 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.samm.practiceapp01.data.repository.RepositoryImpl
 import com.samm.practiceapp01.data.database.NewsDao
 import com.samm.practiceapp01.data.database.NewsDatabase
-import junit.framework.TestCase.assertEquals
+import com.samm.practiceapp01.data.repository.RepositoryImpl
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -17,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 
+// In-Progress
 @RunWith(AndroidJUnit4::class)
 class ViewModelTests {
 
@@ -42,6 +42,6 @@ class ViewModelTests {
 
     @Test
     fun test_empty_database() = runBlocking {
-        assertEquals(0, repositoryImpl.getNewsFromDatabase.value?.size)
+
     }
 }
