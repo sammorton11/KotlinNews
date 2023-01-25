@@ -29,5 +29,4 @@ abstract class NewsDatabase : RoomDatabase() {
                 .fallbackToDestructiveMigration()
                 .build()
     }
-
 }
