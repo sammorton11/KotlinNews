@@ -5,9 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 
 /*
     Todo (Tasks)
-        - Create a Breaking News Fragment. - Optional
-        - Tests need to be changes since adding the database for caching purposes
-        - Play Store
+        - Remove the other view model
+        - Add the news state and news view model to Git
+        - Clean up everything - make it look nice
+        - Push code
  */
 /*
     Todo (Tests):

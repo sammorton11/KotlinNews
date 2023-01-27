@@ -1,9 +1,14 @@
 package com.samm.practiceapp01.presentation
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
-import android.widget.*
+import android.widget.ProgressBar
+import android.widget.SearchView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.isEmpty
@@ -44,6 +49,8 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         val view = inflater.inflate(R.layout.fragment_article, container, false)
         val activity = requireActivity() // activity associated with this fragment
 
+
+
         recyclerView = view.findViewById(R.id.news_list)
         searchField = view.findViewById(R.id.search)
         progressBar = view.findViewById(R.id.progress_bar)
@@ -55,7 +62,7 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
 
         adapter = NewsAdapter(requireContext(), this)
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
-
+        observeCacheData(newsViewModel)
         return view
     }
 
@@ -64,16 +71,22 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         progressBar.visibility = View.GONE
         setUpRecyclerView(layoutManager)
         navControllerSetup()
-        newsViewModel.setNewsFromDatabase(viewLifecycleOwner, adapter)
-
+       // newsViewModel.setNewsFromDatabase(viewLifecycleOwner, adapter, progressBar)
+        getState(newsViewModel)
+        val sharedPref = getPreferences(requireContext())
+        val savedValue = sharedPref.getString("SEARCH_FIELD_VALUE", "")
+        searchField.setQuery(savedValue, false)
         val menuHost: MenuHost = requireActivity()
         hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
         backToTopButton.setOnClickListener { backToTopButtonClickListener() }
 
         searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                val editor = sharedPref.edit()
                 if (query != null) {
-                    fetchNewsData(pageNumber, query)
+                    editor.putString("SEARCH_FIELD_VALUE", query)
+                    editor.apply()
+                    fetchNewsData(pageNumber, searchField.query.toString())
                 }
                 return false
             }
@@ -104,6 +117,10 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         recyclerView.isVerticalScrollBarEnabled = true
     }
 
+    fun getPreferences(context: Context): SharedPreferences {
+        return context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+    }
+
     private fun navControllerSetup() {
         val navHostFragment = activity?.supportFragmentManager
             ?.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -120,13 +137,36 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         if (search.isEmpty()) {
             Toast.makeText(activity, "Search term is missing", Toast.LENGTH_LONG).show()
         } else {
-
-            // Get Data from Database
             newsViewModel.fetchArticles(search, page)
-
-            // Check if loading, success, or error
-            newsViewModel.getState(this, adapter, progressBar, requireContext())
+            getState(newsViewModel)
             viewUtility.hideKeyboard(activity)
+        }
+    }
+
+    private fun getState(viewModel: NewsViewModel) {
+
+        viewModel._newsState.observe(viewLifecycleOwner) {
+            when {
+                it.isLoading -> {
+                    progressBar.visibility = View.VISIBLE
+                }
+                it?.articles?.isNotEmpty() == true -> {
+                    progressBar.visibility = View.GONE
+                    adapter.setNews(it.articles)
+                }
+                it?.error?.isNotEmpty() == true -> {
+                    progressBar.visibility = View.GONE
+                }
+                else -> {
+                    observeCacheData(viewModel)
+                }
+            }
+        }
+    }
+
+    private fun observeCacheData(viewModel: NewsViewModel){
+        viewModel.articlesFromDb.observe(viewLifecycleOwner) { listFromDb ->
+            adapter.setNews(listFromDb)
         }
     }
 
