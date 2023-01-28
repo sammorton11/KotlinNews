@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.samm.practiceapp01.domain.models.Articles
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NewsDao {
@@ -14,7 +15,7 @@ interface NewsDao {
     suspend fun insert(articles: Articles)
 
     @Query("SELECT * FROM my_table ORDER BY id ASC")
-    fun getAllNewsItems(): LiveData<List<Articles>>
+    fun getAllNewsItems(): Flow<List<Articles>>
 
     @Query("DELETE FROM my_table")
     suspend fun clearCache()
