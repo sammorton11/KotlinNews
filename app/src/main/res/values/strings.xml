@@ -15,4 +15,5 @@
     <string name="descriptiontext">Description</string>
     <string name="publishedtext">Published</string>
     <string name="datetext">Date</string>
+    <string name="author">Author</string>
 </resources>
