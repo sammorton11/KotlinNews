@@ -118,6 +118,10 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
                         }
                         true
                     }
+                    R.id.scrollToBottom -> {
+                        scrollToBottomButtonClickListener()
+                        true
+                    }
                     else -> false
                 }
             }
@@ -183,6 +187,10 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
     private fun backToTopButtonClickListener() {
         recyclerView.smoothScrollToPosition(0)
         backToTopButton.visibility = View.GONE
+    }
+
+    private fun scrollToBottomButtonClickListener() {
+        recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
     }
 
     private fun hideViewsWhenScrolled(
