@@ -15,6 +15,7 @@ import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +25,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.samm.practiceapp01.R
 import com.samm.practiceapp01.core.ViewUtility
 import com.samm.practiceapp01.domain.models.Articles
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
 
@@ -49,8 +52,6 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         val view = inflater.inflate(R.layout.fragment_article, container, false)
         val activity = requireActivity() // activity associated with this fragment
 
-
-
         recyclerView = view.findViewById(R.id.news_list)
         searchField = view.findViewById(R.id.search)
         progressBar = view.findViewById(R.id.progress_bar)
@@ -62,7 +63,11 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
 
         adapter = NewsAdapter(requireContext(), this)
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
-        observeCacheData(newsViewModel)
+        newsViewModel.viewModelScope.launch(Dispatchers.Main) {
+            observeCacheData(newsViewModel)
+        }
+
+
         return view
     }
 
@@ -72,13 +77,16 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         setUpRecyclerView(layoutManager)
         navControllerSetup()
        // newsViewModel.setNewsFromDatabase(viewLifecycleOwner, adapter, progressBar)
-        getState(newsViewModel)
+
         val sharedPref = getPreferences(requireContext())
         val savedValue = sharedPref.getString("SEARCH_FIELD_VALUE", "")
         searchField.setQuery(savedValue, false)
+
         val menuHost: MenuHost = requireActivity()
         hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
-        backToTopButton.setOnClickListener { backToTopButtonClickListener() }
+        backToTopButton.setOnClickListener {
+            backToTopButtonClickListener()
+        }
 
         searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -110,6 +118,10 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
                         }
                         true
                     }
+                    R.id.scrollToBottom -> {
+                        scrollToBottomButtonClickListener()
+                        true
+                    }
                     else -> false
                 }
             }
@@ -117,7 +129,7 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         recyclerView.isVerticalScrollBarEnabled = true
     }
 
-    fun getPreferences(context: Context): SharedPreferences {
+    private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
     }
 
@@ -158,21 +170,27 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
                     progressBar.visibility = View.GONE
                 }
                 else -> {
-                    observeCacheData(viewModel)
+                    viewModel.viewModelScope.launch(Dispatchers.Main) {
+                        observeCacheData(viewModel)
+                    }
                 }
             }
         }
     }
 
     private fun observeCacheData(viewModel: NewsViewModel){
-        viewModel.articlesFromDb.observe(viewLifecycleOwner) { listFromDb ->
-            adapter.setNews(listFromDb)
+        if (!recyclerView.isComputingLayout) {
+            viewModel.getDbFlow(adapter)
         }
     }
 
     private fun backToTopButtonClickListener() {
         recyclerView.smoothScrollToPosition(0)
         backToTopButton.visibility = View.GONE
+    }
+
+    private fun scrollToBottomButtonClickListener() {
+        recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
     }
 
     private fun hideViewsWhenScrolled(

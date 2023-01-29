@@ -14,25 +14,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import retrofit2.Response
-/*
-    Todo:
-        - check if the cached data is present before making the API call, and if so, use that data instead of making the API call.
- */
 
 class NewsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database = NewsDatabase.getDatabase(application)
     private val repository = RepositoryImpl(database)
-    val articlesFromDb = repository.articlesFromDatabase
+    private val articlesFromDb = repository.articlesFromDatabase
     private val newsState = MutableLiveData<NewsState>()
     val _newsState = newsState
 
     // Get the articles form the response and add it to the Database
     fun fetchArticles(search: String, page: Int) = viewModelScope.launch(Dispatchers.IO) {
-        val flow = flow(search, page)
+        val flow = getResponseFlow(search, page)
 
         flow.collect { result ->
-
             when (result) {
                 is Resource.Loading -> {
                     newsState.postValue(NewsState(isLoading = true))
@@ -52,7 +47,13 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun flow(search: String, page: Int): Flow<Resource<Response<NewsItem>>> = flow {
+    fun getDbFlow(adapter: NewsAdapter) = viewModelScope.launch(Dispatchers.Main) {
+        articlesFromDb.collect { list ->
+            adapter.setNews(list)
+        }
+    }
+
+    private fun getResponseFlow(search: String, page: Int): Flow<Resource<Response<NewsItem>>> = flow {
         emit(Resource.Loading())
         val list = repository.fetchArticles(search, page)
         emit(Resource.Success(list))
@@ -60,7 +61,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun clearCache() {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.clearCache()
         }
     }
@@ -84,7 +85,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         alert.show()
     }
 
-
+//  Not sure if this is working properly
     private fun removeDuplicates(list: List<Articles>): List<Articles> {
         list.forEach { articles ->
             println(articles)
