@@ -2,6 +2,7 @@ package com.samm.practiceapp01.presentation
 
 import android.app.Application
 import android.content.Context
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.*
 import com.samm.practiceapp01.NewsState
@@ -11,6 +12,7 @@ import com.samm.practiceapp01.domain.models.Articles
 import com.samm.practiceapp01.domain.models.NewsItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -21,30 +23,32 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = RepositoryImpl(database)
     private val articlesFromDb = repository.articlesFromDatabase
     private val newsState = MutableLiveData<NewsState>()
-    val _newsState = newsState
+    val state = newsState
 
     // Get the articles form the response and add it to the Database
     fun fetchArticles(search: String, page: Int) = viewModelScope.launch(Dispatchers.IO) {
-        val flow = getResponseFlow(search, page)
-
-        flow.collect { result ->
-            when (result) {
-                is Resource.Loading -> {
-                    newsState.postValue(NewsState(isLoading = true))
-                }
-                is Resource.Success -> {
-                    result.data?.body()?.articles?.let { list ->
-                        newsState.postValue(NewsState(articles = list))
-                        clearCache()
-                        val removeDuplicates = removeDuplicates(list)
-                        repository.addArticleToDatabase(removeDuplicates)
+        getResponseFlow(search, page)
+            .catch {
+                newsState.postValue(it.message?.let { message -> NewsState(error = message) })
+            }
+            .collect { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        newsState.postValue(NewsState(isLoading = true))
+                    }
+                    is Resource.Success -> {
+                        result.data?.body()?.articles?.let { list ->
+                            newsState.postValue(NewsState(articles = list))
+                            clearCache()
+                            val removeDuplicates = removeDuplicates(list)
+                            repository.addArticleToDatabase(removeDuplicates)
+                        }
+                    }
+                    is Resource.Error -> {
+                        newsState.postValue(result.message?.let { NewsState(error = it) })
                     }
                 }
-                is Resource.Error -> {
-                    newsState.postValue(result.message?.let { NewsState(error = it) })
-                }
             }
-        }
     }
 
     fun getDbFlow(adapter: NewsAdapter) = viewModelScope.launch(Dispatchers.Main) {
@@ -53,10 +57,42 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun getResponseFlow(search: String, page: Int): Flow<Resource<Response<NewsItem>>> = flow {
-        emit(Resource.Loading())
+    private fun getResponseFlow(search: String, page: Int)
+    : Flow<Resource<Response<NewsItem>>> = flow {
         val list = repository.fetchArticles(search, page)
-        emit(Resource.Success(list))
+        when {
+            list.isSuccessful -> {
+                emit(Resource.Success(list))
+            }
+            !list.isSuccessful -> {
+                emit(Resource.Error(list.message()))
+            }
+            else -> {
+                emit(Resource.Loading())
+            }
+        }
+    }
+
+    fun getState(owner: LifecycleOwner, loadingView: View, adapter: NewsAdapter)
+    = viewModelScope.launch(Dispatchers.Main) {
+
+        state.observe(owner, Observer { state ->
+            when {
+                state.isLoading -> {
+                    loadingView.visibility = View.VISIBLE
+                }
+                state?.articles?.isNotEmpty() == true -> {
+                    loadingView.visibility = View.GONE
+                    adapter.setNews(state.articles)
+                }
+                state?.error?.isNotEmpty() == true -> {
+                    loadingView.visibility = View.GONE
+                }
+                else -> {
+                    getDbFlow(adapter)
+                }
+            }
+        })
     }
 
 
@@ -85,7 +121,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         alert.show()
     }
 
-//  Not sure if this is working properly
+    //  Not sure if this is working properly
     private fun removeDuplicates(list: List<Articles>): List<Articles> {
         list.forEach { articles ->
             println(articles)
