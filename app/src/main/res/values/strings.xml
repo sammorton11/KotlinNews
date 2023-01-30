@@ -16,4 +16,9 @@
     <string name="publishedtext">Published</string>
     <string name="datetext">Date</string>
     <string name="author">Author</string>
+    <string name="contact_information">Contact Information:</string>
+    <string name="email_example_com">email@example.com</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="scroll_to_bottom">Scroll to Bottom</string>
+    <string name="sjamesmorton95_gmail_com">sjamesmorton95@gmail.com</string>
 </resources>
