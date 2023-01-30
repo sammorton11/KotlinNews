@@ -66,7 +66,6 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
             observeCacheData(newsViewModel)
         }
 
-
         return view
     }
 
@@ -75,12 +74,10 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         progressBar.visibility = View.GONE
         setUpRecyclerView(layoutManager)
         navControllerSetup()
-       // newsViewModel.setNewsFromDatabase(viewLifecycleOwner, adapter, progressBar)
 
         val sharedPref = getPreferences(requireContext())
         val savedValue = sharedPref.getString("SEARCH_FIELD_VALUE", "")
         searchField.setQuery(savedValue, false)
-
         val menuHost: MenuHost = requireActivity()
         viewUtility.hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
 
@@ -122,6 +119,10 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
                         viewUtility.scrollToBottom(recyclerView, adapter)
                         true
                     }
+                    R.id.contact -> {
+                        navController.navigate(R.id.contactInfoFragment)
+                        true
+                    }
                     else -> false
                 }
             }
@@ -157,7 +158,7 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
 
     private fun getState(viewModel: NewsViewModel) {
         if (!recyclerView.isComputingLayout) {
-            viewModel.getState(viewLifecycleOwner, progressBar, adapter)
+            viewModel.getState(viewLifecycleOwner, progressBar, errorMessageTV, adapter)
         }
     }
 
@@ -166,41 +167,6 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
             viewModel.getDbFlow(adapter)
         }
     }
-
-
-//    private fun backToTopButtonClickListener() {
-//        recyclerView.smoothScrollToPosition(0)
-//        backToTopButton.visibility = View.GONE
-//    }
-//
-//    private fun scrollToBottomButtonClickListener() {
-//        recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
-//    }
-//
-//    private fun hideViewsWhenScrolled(
-//        recyclerView: RecyclerView,
-//        toolbar: View,
-//        backToTopButton: FloatingActionButton
-//    ){
-//        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//
-//                // Get the first visible item position
-//                val firstVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager)
-//                    .findFirstVisibleItemPosition()
-//
-//                // Check if the first visible item is the first item in the list
-//                if (firstVisibleItemPosition == 0 || recyclerView.isEmpty()) {
-//                    toolbar.visibility = View.VISIBLE
-//                    backToTopButton.visibility = View.GONE
-//                } else {
-//                    toolbar.visibility = View.GONE
-//                    backToTopButton.visibility = View.VISIBLE
-//                }
-//            }
-//        })
-//    }
 
     override fun onCardClick(article: Articles?) {
         val bundle = Bundle()

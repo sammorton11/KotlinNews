@@ -7,5 +7,9 @@
         android:title="@string/clear" />
     <item
         android:id="@+id/scrollToBottom"
-        android:title="Scroll to Bottom" />
+        android:title="@string/scroll_to_bottom" />
+
+    <item
+        android:id="@+id/contact"
+        android:title="@string/contact_us"/>
 </menu>
