@@ -13,8 +13,16 @@
         android:text="@string/contact_information" />
 
     <TextView
+        android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/sjamesmorton95_gmail_com"/>
+
+    <Button
+        android:id="@+id/contactButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="Contact" />
 
 </LinearLayout>
