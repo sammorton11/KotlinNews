@@ -59,7 +59,7 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
 
         layoutManager = LinearLayoutManager(activity)
         backToTopButton.setImageResource(R.drawable.ic_baseline_arrow_upward_24)
-
+        recyclerView.scheduleLayoutAnimation()
         adapter = NewsAdapter(requireContext(), this)
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
         newsViewModel.viewModelScope.launch(Dispatchers.Main) {
@@ -153,18 +153,19 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
             newsViewModel.fetchArticles(search, page)
             getState(newsViewModel)
             viewUtility.hideKeyboard(activity)
+
         }
     }
 
     private fun getState(viewModel: NewsViewModel) {
         if (!recyclerView.isComputingLayout) {
-            viewModel.getState(viewLifecycleOwner, progressBar, errorMessageTV, adapter)
+            viewModel.getState(viewLifecycleOwner, progressBar, errorMessageTV, adapter, recyclerView)
         }
     }
 
     private fun observeCacheData(viewModel: NewsViewModel){
         if (!recyclerView.isComputingLayout) {
-            viewModel.getDbFlow(adapter)
+            viewModel.getDbFlow(adapter, recyclerView)
         }
     }
 
