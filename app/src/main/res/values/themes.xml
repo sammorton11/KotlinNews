@@ -3,7 +3,7 @@
     <style name="Theme.PracticeApp01" parent="Theme.MaterialComponents.DayNight.DarkActionBar.Bridge">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/olive_green</item>
-        <item name="colorPrimaryVariant">@color/light_purple</item>
+        <item name="colorPrimaryVariant">@color/olive_green</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/orange_red_crayola</item>

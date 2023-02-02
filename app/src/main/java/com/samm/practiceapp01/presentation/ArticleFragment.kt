@@ -76,12 +76,12 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         progressBar.visibility = View.GONE
         navControllerSetup()
         setUpRecyclerView(layoutManager)
+        val menuHost: MenuHost = requireActivity()
+        viewUtility.hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
 
         val sharedPref = getPreferences(requireContext())
         val savedValue = sharedPref.getString("SEARCH_FIELD_VALUE", "")
         searchField.setQuery(savedValue, false)
-        val menuHost: MenuHost = requireActivity()
-        viewUtility.hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
 
         backToTopButton.setOnClickListener {
             viewUtility.scrollToTop(recyclerView, backToTopButton)
@@ -152,20 +152,18 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
     }
 
     private fun fetchNewsData(page: Int, search: String) {
-
-        if (search.isEmpty()) {
+        if (search.isEmpty() || recyclerView.isComputingLayout) {
             Toast.makeText(activity, "Search term is missing", Toast.LENGTH_LONG).show()
         } else {
             newsViewModel.fetchArticles(search, page)
-            getState(newsViewModel)
+            newsViewModel.getState(
+                owner = viewLifecycleOwner,
+                loadingView = progressBar,
+                errorView = errorMessageTV,
+                adapter = adapter,
+                recyclerView = recyclerView
+            )
             viewUtility.hideKeyboard(activity)
-
-        }
-    }
-
-    private fun getState(viewModel: NewsViewModel) {
-        if (!recyclerView.isComputingLayout) {
-            viewModel.getState(viewLifecycleOwner, progressBar, errorMessageTV, adapter, recyclerView)
         }
     }
 
