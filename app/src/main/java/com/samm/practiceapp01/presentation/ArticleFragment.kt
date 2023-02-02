@@ -3,6 +3,7 @@ package com.samm.practiceapp01.presentation
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.widget.ProgressBar
@@ -17,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -59,7 +61,7 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
 
         layoutManager = LinearLayoutManager(activity)
         backToTopButton.setImageResource(R.drawable.ic_baseline_arrow_upward_24)
-
+        recyclerView.scheduleLayoutAnimation()
         adapter = NewsAdapter(requireContext(), this)
         newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
         newsViewModel.viewModelScope.launch(Dispatchers.Main) {
@@ -72,8 +74,8 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressBar.visibility = View.GONE
-        setUpRecyclerView(layoutManager)
         navControllerSetup()
+        setUpRecyclerView(layoutManager)
 
         val sharedPref = getPreferences(requireContext())
         val savedValue = sharedPref.getString("SEARCH_FIELD_VALUE", "")
@@ -141,7 +143,11 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
     }
 
     private fun setUpRecyclerView(layoutManager: LayoutManager){
-        recyclerView.layoutManager = layoutManager
+        if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            recyclerView.layoutManager = layoutManager
+        } else {
+            recyclerView.layoutManager = GridLayoutManager(activity, 2)
+        }
         recyclerView.adapter = adapter
     }
 
@@ -153,18 +159,19 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
             newsViewModel.fetchArticles(search, page)
             getState(newsViewModel)
             viewUtility.hideKeyboard(activity)
+
         }
     }
 
     private fun getState(viewModel: NewsViewModel) {
         if (!recyclerView.isComputingLayout) {
-            viewModel.getState(viewLifecycleOwner, progressBar, errorMessageTV, adapter)
+            viewModel.getState(viewLifecycleOwner, progressBar, errorMessageTV, adapter, recyclerView)
         }
     }
 
     private fun observeCacheData(viewModel: NewsViewModel){
         if (!recyclerView.isComputingLayout) {
-            viewModel.getDbFlow(adapter)
+            viewModel.getDbFlow(adapter, recyclerView)
         }
     }
 

@@ -66,7 +66,8 @@ class RepositoryDatabaseTest {
     @Test
     fun databaseTest(): Unit = runBlocking {
         repository.addArticleToDatabase(newsItem.articles)
-        val result = db.myDao().getAllNewsItems().value
-        assert(result!!.isNotEmpty())
+        db.myDao().getAllNewsItems().collect { list ->
+            assert(list.isNotEmpty())
+        }
     }
 }

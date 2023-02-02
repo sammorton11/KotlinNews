@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.*
+import androidx.recyclerview.widget.RecyclerView
 import com.samm.practiceapp01.NewsState
 import com.samm.practiceapp01.data.database.NewsDatabase
 import com.samm.practiceapp01.data.repository.RepositoryImpl
@@ -33,15 +34,17 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
                 newsState.postValue(it.message?.let { message -> NewsState(error = message) })
             }
             .collect { result ->
+//                val list = result.data?.body()?.articles
+//                val rd = list?.let { removeDuplicates(it) }
                 when (result) {
                     is Resource.Loading -> {
                         newsState.postValue(NewsState(isLoading = true))
                     }
                     is Resource.Success -> {
                         result.data?.body()?.articles?.let { list ->
-                            newsState.postValue(NewsState(articles = list))
-                            clearCache()
                             val removeDuplicates = removeDuplicates(list)
+                            newsState.postValue(NewsState(articles = removeDuplicates))
+                            clearCache()
                             repository.addArticleToDatabase(removeDuplicates)
                         }
                     }
@@ -52,13 +55,13 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
             }
     }
 
-    fun getDbFlow(adapter: NewsAdapter) = viewModelScope.launch(Dispatchers.Main) {
+    fun getDbFlow(adapter: NewsAdapter, recyclerView: RecyclerView) = viewModelScope.launch(Dispatchers.Main) {
         articlesFromDb.collect { list ->
+            recyclerView.scheduleLayoutAnimation()
             adapter.setNews(list)
         }
     }
-    private fun getResponseFlow(search: String, page: Int)
-    : Flow<Resource<Response<NewsItem>>> = flow {
+    private fun getResponseFlow(search: String, page: Int): Flow<Resource<Response<NewsItem>>> = flow {
         emit(Resource.Loading())
         val list = repository.fetchArticles(search, page)
         when {
@@ -74,7 +77,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getState(owner: LifecycleOwner, loadingView: View, errorView: TextView, adapter: NewsAdapter)
+    fun getState(owner: LifecycleOwner, loadingView: View, errorView: TextView, adapter: NewsAdapter, recyclerView: RecyclerView)
         = viewModelScope.launch(Dispatchers.Main) {
 
         state.observe(owner, Observer { state ->
@@ -84,6 +87,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 state?.articles?.isNotEmpty() == true -> {
                     loadingView.visibility = View.GONE
+                    recyclerView.scheduleLayoutAnimation()
                     adapter.setNews(state.articles)
                 }
                 state?.error?.isNotEmpty() == true -> {
@@ -92,7 +96,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
                     errorView.text = state.error
                 }
                 else -> {
-                    getDbFlow(adapter)
+                    getDbFlow(adapter, recyclerView)
                 }
             }
         })
@@ -125,11 +129,23 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /*
-        Todo:
-            - Does not remove duplicate articles for some reason
+        - checking for a duplicate
+        - for some reason the duplicate cards were "unique" so casting to a set did not work.
+        - This is my workaround.
      */
     private fun removeDuplicates(list: List<Articles>): List<Articles> {
-        val set = list.toSet()
-        return set.toList()
+        val ml = mutableListOf<Articles>()
+        list.forEach {
+            ml.add(it)
+            for (i in ml.indices ) {
+                for (j in i+1 until ml.size){
+                    if (ml[i].title == ml[j].title) {
+                        ml.removeAt(j)
+                    }
+                }
+
+            }
+        }
+        return ml.toList()
     }
 }

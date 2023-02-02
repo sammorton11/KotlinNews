@@ -28,7 +28,6 @@ class NewsAdapter(private val context: Context, private val cardClick: OnCardCli
         val newsDescription: TextView = itemView.findViewById(R.id.news_description)
         val newsImage: ImageView = itemView.findViewById(R.id.news_image)
         val card: CardView = itemView.findViewById(R.id.card_view)
-        val date: TextView = itemView.findViewById(R.id.article_date)
         val author: TextView = itemView.findViewById(R.id.news_author)
 
     }
@@ -43,17 +42,16 @@ class NewsAdapter(private val context: Context, private val cardClick: OnCardCli
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val newsItem = newsList[position]
         val imageUrl = newsItem.urlToImage
-        val formattedDate = newsItem.publishedAt?.let { viewUtility.formatDate(it) }
         val newsImage: ImageView = holder.newsImage
 
         holder.newsTitle.text = newsItem.title
         holder.newsDescription.text = newsItem.description
-        holder.date.text = formattedDate
         holder.author.text = newsItem.author
 
         Glide.with(context)
             .load(imageUrl)
             .override(imageWidth, imageHeight) // resizing
+            .placeholder(R.drawable.ic_launcher_foreground)
             .centerCrop()
             .into(newsImage)
 
