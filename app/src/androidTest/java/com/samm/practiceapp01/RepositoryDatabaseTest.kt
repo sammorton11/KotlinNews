@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.samm.practiceapp01.data.database.NewsDao
 import com.samm.practiceapp01.data.database.NewsDatabase
 import com.samm.practiceapp01.domain.models.Articles
@@ -14,9 +15,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.io.IOException
 
 // In-progress
+@RunWith(AndroidJUnit4::class)
 class RepositoryDatabaseTest {
     @get:Rule(order = 0)
     val testRule = ActivityScenarioRule(MainActivity::class.java)
@@ -64,10 +67,12 @@ class RepositoryDatabaseTest {
     }
 
     @Test
-    fun databaseTest(): Unit = runBlocking {
-        repository.addArticleToDatabase(newsItem.articles)
-        db.myDao().getAllNewsItems().collect { list ->
-            assert(list.isNotEmpty())
-        }
+    fun databaseTest() = runBlocking{
+
+            repository.addArticleToDatabase(newsItem.articles)
+            db.myDao().getAllNewsItems().collect { list ->
+                assert(list.isNotEmpty())
+            }
+
     }
 }

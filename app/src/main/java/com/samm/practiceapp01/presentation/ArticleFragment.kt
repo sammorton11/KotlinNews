@@ -74,7 +74,7 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressBar.visibility = View.GONE
-        navControllerSetup()
+        setUpNavController()
         setUpRecyclerView(layoutManager)
         val menuHost: MenuHost = requireActivity()
         viewUtility.hideViewsWhenScrolled(recyclerView, searchField, backToTopButton)
@@ -136,7 +136,7 @@ class ArticleFragment : Fragment(), NewsAdapter.OnCardClick {
         return context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
     }
 
-    private fun navControllerSetup() {
+    private fun setUpNavController() {
         val navHostFragment = activity?.supportFragmentManager
             ?.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
