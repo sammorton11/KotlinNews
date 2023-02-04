@@ -15,3 +15,4 @@ The goal of this project is to create a well-designed, maintainable, and fully-t
 
 
 ![nexus 6p - kotlin news - portrait - dark mode](https://user-images.githubusercontent.com/86651172/216793641-54307d14-d659-4d5e-af92-d6e3f9c8dc42.PNG)
+![nexus 6p - kotlin news - protrait - light mode](https://user-images.githubusercontent.com/86651172/216793649-0961b0a4-2c4b-4e3c-9920-9344a34b51cc.PNG)
