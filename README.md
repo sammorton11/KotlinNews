@@ -13,4 +13,5 @@ The goal of this project is to create a well-designed, maintainable, and fully-t
 - Gradle
 
 
-![kotlin news - 1](https://user-images.githubusercontent.com/86651172/215018947-b41570a6-4a97-4756-b7a1-0627111b4bcb.PNG)
+
+![nexus 6p - kotlin news - portrait - dark mode](https://user-images.githubusercontent.com/86651172/216793641-54307d14-d659-4d5e-af92-d6e3f9c8dc42.PNG)
