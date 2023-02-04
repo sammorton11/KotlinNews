@@ -27,6 +27,7 @@ class RepositoryDatabaseTest {
     private lateinit var repository: Repository
     private lateinit var db: NewsDatabase
     private lateinit var dao: NewsDao
+
     private val newsItem = NewsItem(
         totalResults = 100,
         articles = listOf(
@@ -67,12 +68,10 @@ class RepositoryDatabaseTest {
     }
 
     @Test
-    fun databaseTest() = runBlocking{
-
-            repository.addArticleToDatabase(newsItem.articles)
-            db.myDao().getAllNewsItems().collect { list ->
-                assert(list.isNotEmpty())
-            }
-
+    fun databaseTest() = runBlocking {
+        repository.addArticleToDatabase(newsItem.articles)
+        db.myDao().getAllNewsItems().collect { list ->
+            assert(list.isNotEmpty())
+        }
     }
 }

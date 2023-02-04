@@ -25,7 +25,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = RepositoryImpl(database)
     private val articlesFromDb = repository.articlesFromDatabase
     private val newsState = MutableLiveData<NewsState>()
-    private val state = newsState
+    private val state = newsState as LiveData<NewsState>
 
     // Get the articles form the response and add it to the Database
     fun fetchArticles(search: String, page: Int) = viewModelScope.launch(Dispatchers.IO) {
@@ -129,6 +129,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         - checking for a duplicate
         - for some reason the duplicate cards were "unique" so casting to a set did not work.
         - This is my workaround.
+        - Don't make this private -- needed in tests
      */
     fun removeDuplicates(list: List<Articles>): List<Articles> {
         val newList = mutableListOf<Articles>()
