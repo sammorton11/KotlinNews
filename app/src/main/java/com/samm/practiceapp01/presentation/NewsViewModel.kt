@@ -25,7 +25,7 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = RepositoryImpl(database)
     private val articlesFromDb = repository.articlesFromDatabase
     private val newsState = MutableLiveData<NewsState>()
-    private val state = newsState
+    private val state = newsState as LiveData<NewsState>
 
     // Get the articles form the response and add it to the Database
     fun fetchArticles(search: String, page: Int) = viewModelScope.launch(Dispatchers.IO) {
@@ -34,8 +34,6 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
                 newsState.postValue(it.message?.let { message -> NewsState(error = message) })
             }
             .collect { result ->
-//                val list = result.data?.body()?.articles
-//                val rd = list?.let { removeDuplicates(it) }
                 when (result) {
                     is Resource.Loading -> {
                         newsState.postValue(NewsState(isLoading = true))
@@ -102,7 +100,6 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-
     fun clearCache() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.clearCache()
@@ -132,20 +129,21 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         - checking for a duplicate
         - for some reason the duplicate cards were "unique" so casting to a set did not work.
         - This is my workaround.
+        - Don't make this private -- needed in tests
      */
-    private fun removeDuplicates(list: List<Articles>): List<Articles> {
-        val ml = mutableListOf<Articles>()
+    fun removeDuplicates(list: List<Articles>): List<Articles> {
+        val newList = mutableListOf<Articles>()
         list.forEach {
-            ml.add(it)
-            for (i in ml.indices ) {
-                for (j in i+1 until ml.size){
-                    if (ml[i].title == ml[j].title) {
-                        ml.removeAt(j)
+            newList.add(it)
+            for (i in newList.indices ) {
+                for (j in i+1 until newList.size){
+                    if (newList[i].title == newList[j].title) {
+                        newList.removeAt(j)
                     }
                 }
 
             }
         }
-        return ml.toList()
+        return newList.toList()
     }
 }
